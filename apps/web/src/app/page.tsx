@@ -1,22 +1,24 @@
+import { LandingWrap } from "@/components/LandingWrap";
+import {Wrapper} from "@/components/Wrapper";
 
 export default function Home() {
   return (
-    <main className="flex flex-col gap-14">
+    <Wrapper direction="col" gap={12}>
       {/* Hero Section */}
       <div className="h-[25rem] w-full border-2 text-center align-middle">
         Hero Section
       </div>
       {/* App advantages */}
-      <div className="border-2 flex h-[10rem]">
+      <LandingWrap direction="row" gap={1} width="[100%]" height="full">
         <div className="basis-1/2 p-3 border-2 border-slate-500">
           bagian kelebihan
         </div>
         <div className="basis-1/2 p-3 border-2 border-slate-500">
           bagian kelebihan
         </div>
-      </div>
+      </LandingWrap>
       {/* Current Events */}
-      <div className="flex flex-col border-2">
+      <LandingWrap direction="col" gap={0} width="full" height="full">
         <div className="h-[15rem] border-4">
             events
         </div>
@@ -26,9 +28,9 @@ export default function Home() {
         <div className="h-[15rem] border-4">
             events
         </div>
-      </div>
+      </LandingWrap>
       {/* Getting Here */}
-      <div className="flex flex-col border-2 mb-5">
+      <LandingWrap direction="col" gap={1} width="full" height="full">
         <h1>Getting Here</h1>
         <div className="flex w-full border-2 gap-9 justify-center">
           <div className="border-4">
@@ -41,7 +43,7 @@ export default function Home() {
             transportaion
           </div>
         </div>
-      </div>
-    </main>
+      </LandingWrap>
+    </Wrapper>
   )
 }

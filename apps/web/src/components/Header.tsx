@@ -46,7 +46,7 @@ export const Header = () => {
           </div>
         </div>
         <div className="navbar-center border-2">
-          <a className="btn btn-ghost text-xl">icon</a>
+          <Link href="/" className='text-xl p-2 hover:bg-slate-200'>Icon</Link>
         </div>
         <div className="navbar-end">
           <SearchModal />
@@ -68,13 +68,9 @@ export const Header = () => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
+              <Link href="/profile">
+                  profile
+                </Link>
               </li>
               <li>
                 <a>Logout</a>
