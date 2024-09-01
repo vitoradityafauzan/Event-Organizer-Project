@@ -1,95 +1,49 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import { LandingWrap } from "@/components/LandingWrap";
+import {Wrapper} from "@/components/Wrapper";
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <Wrapper direction="col" gap={12}>
+      {/* Hero Section */}
+      <div className="h-[25rem] w-full border-2 text-center align-middle">
+        Hero Section
+      </div>
+      {/* App advantages */}
+      <LandingWrap direction="row" gap={1} width="[100%]" height="full">
+        <div className="basis-1/2 p-3 border-2 border-slate-500">
+          bagian kelebihan
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+        <div className="basis-1/2 p-3 border-2 border-slate-500">
+          bagian kelebihan
+        </div>
+      </LandingWrap>
+      {/* Current Events */}
+      <LandingWrap direction="col" gap={0} width="full" height="full">
+        <div className="h-[15rem] border-4">
+            events
+        </div>
+        <div className="h-[15rem] border-4">
+            events
+        </div>
+        <div className="h-[15rem] border-4">
+            events
+        </div>
+      </LandingWrap>
+      {/* Getting Here */}
+      <LandingWrap direction="col" gap={1} width="full" height="full">
+        <h1>Getting Here</h1>
+        <div className="flex w-full border-2 gap-9 justify-center">
+          <div className="border-4">
+            transportaion
+          </div>
+          <div className="border-4">
+            transportaion
+          </div>
+          <div className="border-4">
+            transportaion
+          </div>
+        </div>
+      </LandingWrap>
+    </Wrapper>
   )
 }
