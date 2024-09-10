@@ -1,15 +1,15 @@
 import { LandingWrap } from "@/components/LandingWrap";
 import {Wrapper} from "@/components/Wrapper";
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
-    <Wrapper direction="col" gap={12}>
+    <Wrapper additional="flex-col gap-9">
       {/* Hero Section */}
       <div className="h-[25rem] w-full border-2 text-center align-middle">
         Hero Section
       </div>
       {/* App advantages */}
-      <LandingWrap direction="row" gap={1} width="[100%]" height="full">
+      <LandingWrap additional="gap-9">
         <div className="basis-1/2 p-3 border-2 border-slate-500">
           bagian kelebihan
         </div>
@@ -18,19 +18,19 @@ export default function Home() {
         </div>
       </LandingWrap>
       {/* Current Events */}
-      <LandingWrap direction="col" gap={0} width="full" height="full">
-        <div className="h-[15rem] border-4">
+      <LandingWrap additional="gap-9 border-slate-700">
+        <div className="h-[15rem] border-4 border-slate-400">
             events
         </div>
-        <div className="h-[15rem] border-4">
+        <div className="h-[15rem] border-4 border-slate-400">
             events
         </div>
-        <div className="h-[15rem] border-4">
+        <div className="h-[15rem] border-4 border-slate-400">
             events
         </div>
       </LandingWrap>
       {/* Getting Here */}
-      <LandingWrap direction="col" gap={1} width="full" height="full">
+      <LandingWrap additional="gap-9">
         <h1>Getting Here</h1>
         <div className="flex w-full border-2 gap-9 justify-center">
           <div className="border-4">
@@ -47,3 +47,5 @@ export default function Home() {
     </Wrapper>
   )
 }
+
+export default Home;
