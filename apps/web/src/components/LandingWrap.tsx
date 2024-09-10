@@ -2,15 +2,12 @@ import { ReactNode } from "react";
 
 interface ILandingWrapProps {
     children: ReactNode 
-    direction: string;
-    gap: number;
-    width: string;
-    height: string;
+    additional?: string;
 }
 
-export const LandingWrap: React.FC<ILandingWrapProps> = ({children, direction, gap}) => {
+export const LandingWrap: React.FC<ILandingWrapProps> = ({children, additional}) => {
     return (
-        <div className={`flex flex-${direction} gap-${gap}`}>
+        <div className={`flex flex-col border-4 border-red-600 ${additional}`}>
             {children}
         </div>
     )

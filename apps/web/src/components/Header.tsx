@@ -38,6 +38,11 @@ export const Header = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/event">
+                  Events
+                </Link>
+              </li>
+              <li>
                 <Link href="/testing">
                   Testing
                 </Link>

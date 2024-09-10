@@ -1,14 +1,13 @@
 import { ReactNode } from "react";
 
 interface IWrap {
-    direction: string;
-    gap: number
+    additional?: string;
     children: ReactNode;
 }
 
-export const Wrapper: React.FC<IWrap> = ({ direction, gap, children }) => {
+export const Wrapper: React.FC<IWrap> = ({ additional, children }) => {
     return (
-        <div className={`flex flex-wrap flex-${direction} mx-auto w-full h-full gap-${gap}`}>
+        <div className={`flex flex-wrap mx-auto w-full h-full ${additional}`}>
             {children}
         </div>
     )

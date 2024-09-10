@@ -20,7 +20,7 @@ const Profile: React.FC = () => {
     }
 
   return (
-    <Wrapper direction="row" gap={0}>
+    <Wrapper>
       <div className="lg:basis-[20%] pr-4 drawer lg:drawer-open  border-2">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col items-center justify-center">
