@@ -10,6 +10,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CategoryList {
+  // Special Event
+  Special
+  // Social Meeting & Convention
+  Social
+  // Trade Show
+  Trade
+  // Corporate & Gallas
+  Corporate
+}
+
+enum Role {
+  Attendees
+  Organizer
+}
+
+enum LocationList {
+  A1
+  A2
+  B1
+  B2
+  M1
+  M2
+  M3
+  M4
+}
+
 model Sample {
   id        Int      @id @default(autoincrement())
   name      String
@@ -18,4 +45,58 @@ model Sample {
   updatedAt DateTime @updatedAt
 
   @@map("samples") // if you want to use snake_case format
+}
+
+model User {
+  idUser    Int      @id @default(autoincrement())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  avatar    String?
+  reverral  Int
+  point     Int
+  role      Role     @default(Attendees)
+  isVerify  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Event     Event[]
+}
+
+model Category {
+  idCategory Int          @id @default(autoincrement())
+  name       CategoryList @default(Trade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Event      Event[]
+}
+
+model Location {
+  idLocation Int          @id @default(autoincrement())
+  name       LocationList @default(A1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Event      Event[]
+}
+
+model Event {
+  idEvent     Int      @id @default(autoincrement())
+  organizerId Int
+  name        String
+  slug        String
+  desc        String   @db.LongText
+  image       String?
+  price       Int
+  amount      Int
+  categoryId  Int
+  startDate   DateTime
+  endDate     DateTime
+  locationId  Int
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt 
+
+  user     User     @relation(fields: [organizerId], references: [idUser])
+  category Category @relation(fields: [categoryId], references: [idCategory])
+  location Location @relation(fields: [locationId], references: [idLocation])
 }
