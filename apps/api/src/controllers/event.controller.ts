@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma';
-import { Prisma } from '@prisma/client';
 import { format, formatISO, isMatch } from 'date-fns';
 
 export class EventController {
@@ -44,6 +43,27 @@ export class EventController {
       });
     }
   }
+
+  async getCategoryLocation(req: Request, res: Response) {
+    try {
+
+      const category = await prisma.category.findMany();
+
+      const location = await prisma.location.findMany();
+
+      res.status(200).send({
+            status: 'ok',
+            category,
+            location
+          });
+          //
+        } catch (err) {
+          res.status(400).send({
+            status: 'error',
+            msg: err,
+          });
+        }
+      }
 
   async createEvents(req: Request, res: Response) {
     try {
