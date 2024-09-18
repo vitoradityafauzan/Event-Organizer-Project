@@ -8,9 +8,14 @@ import {
 
 // Define the structure for our context value
 interface ContextGlobalType {
-  categories: string[];
-  locations: string[];
+  categories: any[] | null;
+  locations: any[] | null;
   fetchCategoriesLocations: () => Promise<void>;
+}
+
+interface IData {
+  categoryList: any[] | null;
+  locationList: any[] | null;
 }
 
 // Create the context with a default value
@@ -26,36 +31,43 @@ export const ContextGlobalProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [locations, setLocations] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[] | null>(null);
+  const [locations, setLocations] = useState<any[] | null>(null);
 
   const fetchCategoriesLocations = async () => {
     const data: any = await getCategoriesLocationsHome();    
 
-    if (data == 'not-found') {
+    console.log('fetchCategoriesLocations start');        
+
+    if (data.categoryList[0] == 'not-found') {
 
       await createCategoriesLocations();
 
       const data2: any = await getCategoriesLocationsHome();
 
-    //   console.log('Cookies Set \n');
+      console.log('Cookies Set \n');
 
-    //   console.log(typeof data2.categoryList, ' => ', data2.categoryList, '\n');
-    //   console.log(typeof data2.locationList, ' => ', data2.locationList, '\n');
+      console.log(typeof data2.categoryList, ' => ');
+      console.log(data2.categoryList[0]);
 
-      setCategories(data.categoryList);
-      setLocations(data.locationList);
+      console.log(typeof data2.locationList, ' => ');
+      console.log(data2.locationList);
+
+      setCategories(data2.categoryList);
+      setLocations(data2.locationList);
     } else {
-    //   console.log('Cookies Detected');
+      console.log('Cookies Detected');
 
-    //   console.log(typeof data.categoryList, ' => ', data.categoryList, '\n');
-    //   console.log(typeof data.locationList, ' => ', data.locationList, '\n');
+      console.log(typeof data.categoryList, ' => ');
+      console.log(data.categoryList[0].name);
+      
+      console.log(typeof data.locationList, ' => ');
+      console.log(data.locationList);
 
-      //   await deleteCategoriesLocations();
+      // await deleteCategoriesLocations();
+      // console.log('Cookies Deleted');
 
-      //   console.log('Cookies Deleted');
-
-    //   console.log(data.categoryList[0].idCategory, " - ", data.categoryList[0].name);
+      // console.log(data.categoryList[0].idCategory, " - ", data.categoryList[0].name);
       
 
       setCategories(data.categoryList);

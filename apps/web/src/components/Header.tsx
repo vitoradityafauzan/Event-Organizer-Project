@@ -51,7 +51,7 @@ export const Header = () => {
           </div>
         </div>
         <div className="navbar-center border-2">
-          <Link href="/" className='text-xl p-2 hover:bg-slate-200'>Icon</Link>
+          <Link href="/" className='text-xl p-2 hover:bg-slate-200'>La Memoria Infinita</Link>
         </div>
         <div className="navbar-end">
           <SearchModal />

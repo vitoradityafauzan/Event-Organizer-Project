@@ -26,14 +26,20 @@ export async function createCategoriesLocations() {
 }
 
 export async function getCategoriesLocationsHome() {
+  console.log('Server Ts, getCategoriesLocationsHome');
+  
   if (cookiesStore.has('categories') && cookiesStore.has('locations')) {
+    console.log('Server Ts, getting cookie');
+    console.log(cookiesStore.get('categories'));    
+    
     const dataCategory = cookiesStore.get('categories')?.value;
     const dataLocation = cookiesStore.get('locations')?.value;
 
     return { categoryList: dataCategory, locationList: dataLocation };
 
   } else {
-    return 'not-found';
+    console.log('Server Ts, cookie not found/expire');
+    return { categoryList: ['not-found'], locationList: ['not-found'] };
 
   }
 }

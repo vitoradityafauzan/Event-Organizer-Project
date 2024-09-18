@@ -4,6 +4,8 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ContextGlobalProvider } from '@/context/Context';
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,6 +25,12 @@ export default function RootLayout({
         <ContextGlobalProvider>
           <Header />
           {children}
+          <ToastContainer
+            position="bottom-right"
+            autoClose={3000}
+            closeOnClick
+            draggable
+          />
           <Footer />
         </ContextGlobalProvider>
       </body>

@@ -13,13 +13,11 @@ const SearchModal: React.FC = () => {
     useContextGlobal();
 
   useEffect(() => {
-    if (
-      (categories === null ||
-        categories == undefined ||
-        categories.length < 1) &&
-      (locations === null || locations == undefined || locations.length < 1)
-    ) {
+    if (!categories && !locations) {
       fetchCategoriesLocations();
+
+      console.log('Search component = ', categories);
+      
     }
   }, [categories, locations, fetchCategoriesLocations]);
 
@@ -44,8 +42,7 @@ const SearchModal: React.FC = () => {
       {/* isOpen &&  */}
       {isOpen && (
         <>
-          {(categories === null || categories == undefined) &&
-          (locations === null || locations == undefined) ? (
+          {!categories && !locations ? (
             <div className="fixed inset-0 w-screen h-screen flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
               <div className="bg-white w-11/12 h-[80%] p-8 rounded shadow-lg relative overflow-y-auto">
                 {/* Close Button */}
@@ -94,7 +91,7 @@ const SearchModal: React.FC = () => {
                       <option disabled selected>
                         What is the best TV show?
                       </option>
-                      {categories.map((cat: any) => (
+                      {categories!.map((cat: any) => (
                         <option key={cat.idCategory}>{cat.name}</option>
                       ))}
                     </select>
@@ -104,7 +101,7 @@ const SearchModal: React.FC = () => {
                       <option disabled selected>
                         What is the best Movies?
                       </option>
-                      {locations.map((lot: any) => (
+                      {locations!.map((lot: any) => (
                         <option key={lot.idLocation}>{lot.name}</option>
                       ))}
                     </select>

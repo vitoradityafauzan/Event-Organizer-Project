@@ -2,8 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-.body {
+html, body {
   background-color: white;
+  margin: 0;
+  padding: 0;
+  /* box-sizing: border-box; */
+  overflow-x: hidden; /* This helps avoid horizontal scrollbars */
+}
+
+#sneakPeakRadial {
+  background: rgb(251,191,36);
+  background: radial-gradient(circle, rgba(251,191,36,1) 0%, rgba(255,255,255,1) 67%);
 }
 
 /*

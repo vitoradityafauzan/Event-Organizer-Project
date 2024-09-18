@@ -11,7 +11,7 @@ export default function Event() {
       <div className="flex flex-wrap gap-5 justify-around">
         {loo.map((lo) => {
             return (
-                <CardEvent key={lo} title={lo} />
+                <CardEvent loopKey={lo} name={lo} desc="lorem" />
             )
         })}
       </div>

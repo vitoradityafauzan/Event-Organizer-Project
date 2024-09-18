@@ -1,6 +1,6 @@
 'use client';
 
-import { EventCreate, FormEventCreate } from '@/type/event';
+import { EventPost, FormEventCreate } from '@/type/event';
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -51,9 +51,9 @@ const FormCreateEvent: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const {locations, categories} = await getLocationAndCategory
-  })
+  // useEffect(() => {
+  //   const {locations, categories} = await getLocationAndCategory
+  // })
 
   return (
     <div className="border-4 grow">
@@ -107,6 +107,8 @@ const FormCreateEvent: React.FC = () => {
                       setFieldValue('image', file);
 
                       if (file) {
+                        console.log(file);
+                        
                         const reader = new FileReader();
                         reader.onloadend = () => {
                           setImagePreview(reader.result as string);
