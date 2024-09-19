@@ -50,19 +50,21 @@ model Sample {
 
 model User {
   idUser    Int      @id @default(autoincrement())
-  email     String   @unique
-  firstName String
-  lastName  String
-  password  String
-  avatar    String?
-  reverral  Int
-  point     Int
-  role      Role     @default(Attendees)
-  isVerify  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  firstName      String
+  lastName       String
+  email          String   @unique
+  password       String
+  phone          String
+  userType       Role
+  referralCode   String?
+  points         Int      @default(0)
+  userUniqueCode String?  @unique
+  isActive       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   Event     Event[]
 }
+
 
 model Category {
   idCategory Int          @id @default(autoincrement())

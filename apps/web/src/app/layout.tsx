@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/Header';
+import Header from '@/components/Header';
 import { Footer } from '@/components/Footer';
+<<<<<<< HEAD
 import { ContextGlobalProvider } from '@/context/Context';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
+=======
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import StoreProvider from '@/components/StoreProvider';
+>>>>>>> main
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+<<<<<<< HEAD
         <ContextGlobalProvider>
           <Header />
           {children}
@@ -33,6 +40,20 @@ export default function RootLayout({
           />
           <Footer />
         </ContextGlobalProvider>
+=======
+        <StoreProvider>
+          <Header />
+          {children}
+          <Footer />
+        </StoreProvider>
+
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          closeOnClick
+          draggable
+        />
+>>>>>>> main
       </body>
     </html>
   );
