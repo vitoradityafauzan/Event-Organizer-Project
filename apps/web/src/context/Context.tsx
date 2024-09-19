@@ -38,8 +38,10 @@ export const ContextGlobalProvider = ({
     const data: any = await getCategoriesLocationsHome();    
 
     console.log('fetchCategoriesLocations start');        
-
-    if (data.categoryList[0] == 'not-found') {
+    
+    console.log(data.categoryList[0].name == undefined ? 'is undefined' : 'is defined');
+    
+    if (data.categoryList[0].name == undefined || data.categoryList[0] == 'not-found') {
 
       await createCategoriesLocations();
 

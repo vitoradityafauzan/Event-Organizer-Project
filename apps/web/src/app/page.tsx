@@ -24,7 +24,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     console.log('Home component, checking categories\n', categories);
     
-  })
+  }, [categories])
 
   return (
     <Wrapper additional="flex-col gap-32">

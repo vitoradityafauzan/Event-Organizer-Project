@@ -16,6 +16,10 @@ export async function createCategoriesLocations() {
   
   const oneDay = 24 * 60 * 60 * 1000;
 
+  // const category = [{idCategory: 0, name: 'Category Select'}, ...data.category];
+
+  // const location = [{idLocation: 0, name: 'Location Select'}, ...data.location];
+
   cookiesStore.set('categories', data.category, {
     expires: Date.now() + oneDay,
   });
@@ -27,7 +31,7 @@ export async function createCategoriesLocations() {
 
 export async function getCategoriesLocationsHome() {
   console.log('Server Ts, getCategoriesLocationsHome');
-  
+
   if (cookiesStore.has('categories') && cookiesStore.has('locations')) {
     console.log('Server Ts, getting cookie');
     console.log(cookiesStore.get('categories'));    

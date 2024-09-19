@@ -1,25 +1,89 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // components/SearchModal.tsx
 'use client';
 
 import { useContextGlobal } from '@/context/Context';
-import React, { useEffect, useState } from 'react';
+import { getEventList } from '@/lib/event';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useDebounce } from 'use-debounce';
 
 const SearchModal: React.FC = () => {
+  // Setting for modal
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
+  // Global state setting
   const { categories, locations, fetchCategoriesLocations } =
     useContextGlobal();
 
   useEffect(() => {
     if (!categories && !locations) {
+      
       fetchCategoriesLocations();
 
       console.log('Search component = ', categories);
       
     }
   }, [categories, locations, fetchCategoriesLocations]);
+
+  // Searching query setting
+  
+  const searchParams = useSearchParams();
+  const querySearch = searchParams.get('search');
+  const queryCategory = searchParams.get('category');
+  const queryLocation = searchParams.get('location');
+
+  const searchRef = useRef<HTMLInputElement | null>(null);
+  const [data, setData] = useState<any[] | null>(null);
+  const [search, setSearch] = useState<string>(querySearch || '');
+  const [category, setCategory] = useState<string>(queryCategory || '');
+  const [location, setLocation] = useState<string>(queryLocation || '');
+
+  const [debouncedSearch] = useDebounce(search, 1000);
+  const [debouncedCategory] = useDebounce(category, 1000);
+  const [debouncedLocation] = useDebounce(location, 1000);
+
+  const router = useRouter();
+
+  const handleSearchChange = () => {
+    if (searchRef.current) {
+        setSearch(searchRef.current.value)
+    }
+  }
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(e.target.value)
+  }
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLocation(e.target.value)
+  }
+
+  // Getting event list
+  const getData = async () => {
+    try {
+      // Update the URL query with both search and category
+      const query = `?search=${debouncedSearch}&category=${debouncedCategory}&location=${debouncedLocation}`
+      // const query = `?search=${debouncedSearch}`
+      router.push(query)
+
+      const {events} = await getEventList(debouncedSearch, debouncedCategory, debouncedLocation);
+      // const {events} = await getEventList(debouncedSearch)
+
+      setData(events)
+
+    } catch (err) {
+      toast.error(`${err}`)
+    }
+  }
+
+  useEffect(() => {
+    getData();
+
+  }, /*[debouncedSearch]*/[debouncedSearch, debouncedCategory, debouncedLocation] )
 
   return (
     <>
@@ -78,57 +142,65 @@ const SearchModal: React.FC = () => {
                   &times;
                 </button>
 
-                <input
+                {/* <input
                   type="text"
                   placeholder="Type here"
+                  className="input w-full mb-0 p-5"
+                /> */}
+                <input
+                  type="search"
+                  placeholder="Type here"
+                  onChange={handleSearchChange}
+                  ref={searchRef}
+                  defaultValue={debouncedSearch}
                   className="input w-full mb-0 p-5"
                 />
                 <div className="w-full rounded-lg border-b-2 border-black mb-5"></div>
 
                 <div className="w-fit h-fit mx-auto flex gap-5 p-4 border-4">
                   <div>
-                    <select className="select w-full max-w-xs border-2">
-                      <option disabled selected>
-                        What is the best TV show?
-                      </option>
+                    <select 
+                      className="select w-full max-w-xs border-2"
+                      onChange={handleCategoryChange}
+                      value={category}
+                    >
+                      {/* <option disabled selected>
+                        Choose Category
+                      </option> */}
                       {categories!.map((cat: any) => (
-                        <option key={cat.idCategory}>{cat.name}</option>
+                        <option key={cat.idCategory} value={cat.idCategory}>{cat.name}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <select className="select w-full max-w-xs border-2">
-                      <option disabled selected>
-                        What is the best Movies?
-                      </option>
+                    <select
+                      onChange={handleLocationChange}
+                      value={location}
+                      className="select w-full max-w-xs border-2"
+                    >
                       {locations!.map((lot: any) => (
-                        <option key={lot.idLocation}>{lot.name}</option>
+                        <option key={lot.idLocation} value={lot.idLocation}>{lot.name}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 <div className="flex flex-col h-full gap-6 mb-8">
-                  <div className="border-b-2 border-black flex flex-col gap-2">
+                  {/* <div className="border-b-2 border-black flex flex-col gap-2">
                     <h2 className="text-3xl">Modal Title</h2>
                     <p className="text-lg">This is a client-side modal.</p>
                     <h3 className="text-sm">01-01-1999</h3>
-                  </div>
-                  <div className="border-b-2 border-black flex flex-col gap-2">
-                    <h2 className="text-3xl">Modal Title</h2>
-                    <p className="text-lg">This is a client-side modal.</p>
-                    <h3 className="text-sm">01-01-1999</h3>
-                  </div>
-                  <div className="border-b-2 border-black flex flex-col gap-2">
-                    <h2 className="text-3xl">Modal Title</h2>
-                    <p className="text-lg">This is a client-side modal.</p>
-                    <h3 className="text-sm">01-01-1999</h3>
-                  </div>
-                  <div className="border-b-2 border-black flex flex-col gap-2">
-                    <h2 className="text-3xl">Modal Title</h2>
-                    <p className="text-lg">This is a client-side modal.</p>
-                    <h3 className="text-sm">01-01-1999</h3>
-                  </div>
+                  </div> */}
+                  {data && (
+                    data.map((d: any) => (
+                      <div key={d.idEvent} className="border-b-2 border-black flex flex-col gap-2">
+                        <h2 className="text-3xl">{d.name}</h2>
+                        <p className="text-lg">{d.desc}</p>
+                        <h3 className="text-sm">{d.startDate}</h3>
+                      </div>
+                    ))
+                  )}
+                  
                 </div>
               </div>
             </div>

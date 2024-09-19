@@ -17,12 +17,16 @@ export const postEvent = async (data: EventPost) => {
   return { result, ok: res.ok };
 };
 
-export const getEventList = async () => {
+export const getEventList = async /*(search: string)*/ (search: string, category: string, location: string) => {
   console.log('event lib, fetching event list start');
-  
-  const res = await fetch(`${base_url}event`);
+
+  console.log('search query-',search,', category query-',category, ', location-',location);
+
+  // const res = await fetch(`${base_url}event`);
+  const res = await fetch(`${base_url}event?search=${search}&category=${category}&location=${location}`);
+  // const res = await fetch(`${base_url}event?search=${search}`);
   const result = await res.json();
-  let events: (string | number)[] = [];
+  // let events: (string | number)[] = [];
 
   if (result.status != 'ok') {
     console.log('fetching failed');
@@ -30,12 +34,14 @@ export const getEventList = async () => {
     throw new Error('Failed to fetch events');
   } else {
     console.log('fetching success');
-    
-    events = [...result.events];
 
-    console.log(events);
+    return {events: [...result.events]}
     
-    return events;
+    // events = [...result.events];
+
+    // console.log(events);
+    
+    // return events;
   }
 
   // return { ok: result.ok, events: result.events };
