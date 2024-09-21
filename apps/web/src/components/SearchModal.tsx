@@ -21,16 +21,13 @@ const SearchModal: React.FC = () => {
 
   useEffect(() => {
     if (!categories && !locations) {
-      
       fetchCategoriesLocations();
 
       console.log('Search component = ', categories);
-      
     }
   }, [categories, locations, fetchCategoriesLocations]);
 
-  // Searching query setting
-  
+  // Search state and query handling
   const searchParams = useSearchParams();
   const querySearch = searchParams.get('search');
   const queryCategory = searchParams.get('category');
@@ -42,27 +39,43 @@ const SearchModal: React.FC = () => {
   const [category, setCategory] = useState<string>(queryCategory || '');
   const [location, setLocation] = useState<string>(queryLocation || '');
 
+  // Set debounce value
   const [debouncedSearch] = useDebounce(search, 1000);
   const [debouncedCategory] = useDebounce(category, 1000);
   const [debouncedLocation] = useDebounce(location, 1000);
 
   const router = useRouter();
 
+  // Track if user has interacted with the inputs
+  const [isSearchTouched, setIsSearchTouched] = useState(false);
+  const [isCategoryTouched, setIsCategoryTouched] = useState(false);
+  const [isLocationTouched, setIsLocationTouched] = useState(false);
+
+  //  Handle Inputs activity
   const handleSearchChange = () => {
     if (searchRef.current) {
-        setSearch(searchRef.current.value)
+      setSearch(searchRef.current.value);
+      setIsSearchTouched(true); // Mark search as touched
     }
-  }
+  };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategory(e.target.value)
-  }
+    setCategory(e.target.value);
+    setIsCategoryTouched(true); // Mark category as touched
+  };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setLocation(e.target.value)
-  }
+    setLocation(e.target.value);
+    setIsLocationTouched(true); // Mark location as touched
+  };
 
-  // Getting event list
+  // Handle description html string
+  function createMarkup(c: string) {
+    return { __html: c };
+}
+
+  // Fetch event list and update the URL only if the inputs have been touched
+  /*
   const getData = async () => {
     try {
       // Update the URL query with both search and category
@@ -79,11 +92,39 @@ const SearchModal: React.FC = () => {
       toast.error(`${err}`)
     }
   }
+  */
 
-  useEffect(() => {
-    getData();
+  const getData = async () => {
+    try {
+      // Only push the query to the router if at least one input has been changed by the user
+      if (isSearchTouched || isCategoryTouched || isLocationTouched) {
+        const query = `?search=${debouncedSearch}&category=${debouncedCategory}&location=${debouncedLocation}`;
+        router.push(query);
+      }
 
-  }, /*[debouncedSearch]*/[debouncedSearch, debouncedCategory, debouncedLocation] )
+      // Fetch events based on the search parameters
+      const { events } = await getEventList(
+        debouncedSearch,
+        debouncedCategory,
+        debouncedLocation,
+      );
+      setData(events);
+    } catch (err) {
+      toast.error(`${err}`);
+    }
+  };
+
+  // Trigger getData when debounced values change
+  useEffect(
+    () => {
+      getData();
+    },
+    /*[debouncedSearch]*/ [
+      debouncedSearch,
+      debouncedCategory,
+      debouncedLocation,
+    ],
+  );
 
   return (
     <>
@@ -159,16 +200,16 @@ const SearchModal: React.FC = () => {
 
                 <div className="w-fit h-fit mx-auto flex gap-5 p-4 border-4">
                   <div>
-                    <select 
+                    <select
                       className="select w-full max-w-xs border-2"
                       onChange={handleCategoryChange}
                       value={category}
                     >
-                      {/* <option disabled selected>
-                        Choose Category
-                      </option> */}
+                      <option value="">Select Category</option>
                       {categories!.map((cat: any) => (
-                        <option key={cat.idCategory} value={cat.idCategory}>{cat.name}</option>
+                        <option key={cat.idCategory} value={cat.idCategory}>
+                          {cat.name}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -178,8 +219,11 @@ const SearchModal: React.FC = () => {
                       value={location}
                       className="select w-full max-w-xs border-2"
                     >
+                      <option value="">Select Location</option>
                       {locations!.map((lot: any) => (
-                        <option key={lot.idLocation} value={lot.idLocation}>{lot.name}</option>
+                        <option key={lot.idLocation} value={lot.idLocation}>
+                          {lot.name}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -191,16 +235,17 @@ const SearchModal: React.FC = () => {
                     <p className="text-lg">This is a client-side modal.</p>
                     <h3 className="text-sm">01-01-1999</h3>
                   </div> */}
-                  {data && (
+                  {data &&
                     data.map((d: any) => (
-                      <div key={d.idEvent} className="border-b-2 border-black flex flex-col gap-2">
+                      <div
+                        key={d.idEvent}
+                        className="border-b-2 border-black flex flex-col gap-2"
+                      >
                         <h2 className="text-3xl">{d.name}</h2>
-                        <p className="text-lg">{d.desc}</p>
+                        <p className="text-lg" dangerouslySetInnerHTML={createMarkup(d.desc)}></p>
                         <h3 className="text-sm">{d.startDate}</h3>
                       </div>
-                    ))
-                  )}
-                  
+                    ))}
                 </div>
               </div>
             </div>

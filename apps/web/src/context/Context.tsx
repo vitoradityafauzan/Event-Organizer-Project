@@ -23,7 +23,7 @@ const ContextGlobal = createContext<ContextGlobalType | undefined>(undefined);
 
 // Set Base Url Of API
 const base_url =
-  process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000/api/';
+  process.env.BASE_URL_API || 'http://localhost:8000/api/';
 
 // Provider component to wrap around the application
 export const ContextGlobalProvider = ({

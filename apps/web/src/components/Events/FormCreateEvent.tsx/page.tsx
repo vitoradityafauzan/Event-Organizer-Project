@@ -8,7 +8,8 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import 'react-quill/dist/quill.snow.css';
 import dynamic from 'next/dynamic';
-import { getLocationAndCategory } from '@/lib/event';
+import { useContextGlobal } from '@/context/Context';
+import { postEvent } from '@/lib/event';
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const EventCreateSchema = yup.object().shape({
@@ -16,37 +17,60 @@ const EventCreateSchema = yup.object().shape({
   desc: yup.string().required('Description is required'),
   price: yup.number().required('Price is required'),
   amount: yup.number().required('Ticket amount is required'),
-  startDate: yup.date().required('Time Required'),
+  startDate: yup.date().required('Start Date is required'),
+  endDate: yup.date().required('End Date is required'),
+  startTime: yup.string().required('Start Time is required'),
+  endTime: yup.string().required('End Time is required'),
+  locationId: yup.number().required('Location is required'),
+  categoryId: yup.number().required('Category is required'),
 });
 
 const FormCreateEvent: React.FC = () => {
+  // State For Form
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [locations, setLocations] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  //   const [description, setDescription] = useState<string>('');
-  const [time, setTime] = useState<Date>();
+  const [isPaid, setIsPaid] = useState(false);
 
+  // Global state setting
+  const { categories, locations, fetchCategoriesLocations } =
+    useContextGlobal();
+  useEffect(() => {
+    if (!categories && !locations) {
+      fetchCategoriesLocations();
+
+      console.log('Search component = ', categories);
+    }
+  }, [categories, locations, fetchCategoriesLocations]);
+
+  // Slug creation
+  const createSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  };
+
+  // Form Submit handler
   const handleSubmit = async (
     data: FormEventCreate,
     action: FormikHelpers<FormEventCreate>,
   ) => {
     try {
-      // const {result, ok} = await postEvent(data)
+      const { result } = await postEvent(data);
 
-      // if (!ok)
-      //     throw result.msg;
+      if (result.status == 'error') {
+        throw result.msg;
+      } else {
+        toast.success(result.msg);
+      }
 
-      // toast.success(result.msg);
-      //   data.desc = description;
-
-      console.log(data);
-
-      toast.success('data success');
+      // console.log(data);
+      // toast.success('data success');
 
       action.resetForm();
     } catch (err) {
       console.log(err);
-
       toast.error(err as String);
     }
   };
@@ -95,6 +119,7 @@ const FormCreateEvent: React.FC = () => {
                     No Image
                   </div>
                 )}
+                {/* Image */}
                 <div>
                   <label htmlFor="image">Upload Image</label>
                   <input
@@ -107,8 +132,8 @@ const FormCreateEvent: React.FC = () => {
                       setFieldValue('image', file);
 
                       if (file) {
-                        console.log(file);
-                        
+                        // console.log(file);
+
                         const reader = new FileReader();
                         reader.onloadend = () => {
                           setImagePreview(reader.result as string);
@@ -131,19 +156,47 @@ const FormCreateEvent: React.FC = () => {
                     <Image src={imagePreview} alt="No Image" width={0} height={0} sizes='100vw' className='w-9/12 h-36' />
                   </div>
                 )} */}
+
+                {/* Name */}
                 <div>
                   <label htmlFor="name">Name</label>
-                  <Field
+                  <input
+                    type="text"
+                    name="name"
+                    value={values.name}
+                    placeholder="Enter the name of the event"
+                    onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                      setFieldValue('name', e.currentTarget.value);
+                      setFieldValue('slug', createSlug(e.currentTarget.value));
+                    }}
+                  />
+                  {/* <Field
                     type="text"
                     name="name"
                     placeholder="Enter the name of the event"
-                  />
+                    onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                      setFieldValue('slug', e.currentTarget.value)
+                    }}
+                  /> */}
                   <ErrorMessage
                     name="name"
                     component="div"
                     className="text-red-500"
                   />
                 </div>
+
+                {/* Slug */}
+                <div>
+                  <input
+                    type="text"
+                    name="slug"
+                    value={values.slug}
+                    readOnly
+                    disabled
+                  />
+                </div>
+
+                {/* Description */}
                 <div className="w-10/12 h-fit p-4">
                   <label htmlFor="desc">Description</label>
                   <ReactQuill
@@ -159,6 +212,7 @@ const FormCreateEvent: React.FC = () => {
                     className="text-red-500"
                   />
                 </div>
+
                 {/* <div className='w-10/12 h-fit p-4'>
                     <label htmlFor="desc">Description</label>
                     <ReactQuill
@@ -173,9 +227,52 @@ const FormCreateEvent: React.FC = () => {
                     />
                 </div> */}
 
+                {/* Set Ticket Price */}
+                <div className="form-control">
+                  <label className="label cursor-pointer">
+                    <span className="label-text">Is This Paid Event</span>
+                    <input
+                      type="checkbox"
+                      checked={isPaid}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setIsPaid(e.target.checked);
+
+                        if (!e.target.checked) {
+                          setFieldValue('price', 0);
+                        }
+                      }}
+                      className="checkbox"
+                    />
+                  </label>
+                </div>
+
+                {isPaid && (
+                  <div>
+                    <label htmlFor="price">Set Price</label>
+                    <Field type="number" name="price" />
+                    <ErrorMessage
+                      name="price"
+                      component="div"
+                      className="text-red-500"
+                    />
+                  </div>
+                )}
+
+                {/* Maximum Attendees */}
+                <div>
+                  <label htmlFor="amount">Set Maximum Attendees</label>
+                  <Field type="number" name="amount" />
+                  <ErrorMessage
+                    name="amount"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                {/* Start Date */}
                 <div>
                   <label htmlFor="startDate">Start Date</label>
-                  <Field type="startDate" name="startDate" />
+                  <Field type="date" name="startDate" />
                   <ErrorMessage
                     name="startDate"
                     component="div"
@@ -183,9 +280,10 @@ const FormCreateEvent: React.FC = () => {
                   />
                 </div>
 
+                {/* End Date */}
                 <div>
                   <label htmlFor="endDate">End Date</label>
-                  <Field type="endDate" name="endDate" />
+                  <Field type="date" name="endDate" />
                   <ErrorMessage
                     name="endDate"
                     component="div"
@@ -193,9 +291,10 @@ const FormCreateEvent: React.FC = () => {
                   />
                 </div>
 
+                {/* Start Time */}
                 <div>
                   <label htmlFor="startTime">Open Time</label>
-                  <Field type="startTime" name="startTime" />
+                  <Field type="time" name="startTime" />
                   <ErrorMessage
                     name="startTime"
                     component="div"
@@ -203,15 +302,116 @@ const FormCreateEvent: React.FC = () => {
                   />
                 </div>
 
+                {/* End Time */}
                 <div>
                   <label htmlFor="endTime">Close Time</label>
-                  <Field type="endTime" name="endTime" />
+                  <Field type="time" name="endTime" />
                   <ErrorMessage
                     name="endTime"
                     component="div"
                     className="text-red-500"
                   />
                 </div>
+
+                {/* Category Select */}
+                <div>
+                  <label htmlFor="categoryId">Category</label>
+                  <select
+                    className="select w-full max-w-xs border-2"
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFieldValue('categoryId', Number(e.target.value));
+                    }}
+                    value={values.categoryId}
+                  >
+                    <option value="">Select Category</option>
+                    {categories!.map((cat: any) => (
+                      <option key={cat.idCategory} value={cat.idCategory}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ErrorMessage
+                    name="categoryId"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                {/* <div>
+                  <label htmlFor="categoryId">Category</label>
+                  <Field
+                    as="select"
+                    name="categoryId"
+                    className="border p-2"
+                    value={values.categoryId}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFieldValue('categoryId', Number(e.target.value));
+                    }}
+                  >
+                    <option value="">Select Category</option>
+                    {categories &&
+                      categories.map((category: any) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                  </Field>
+                  <ErrorMessage
+                    name="categoryId"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div> */}
+
+                {/* Location Select */}
+                <div>
+                  <label htmlFor="locationId">Location</label>
+                  <select
+                    className="select w-full max-w-xs border-2"
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                      setFieldValue('locationId', Number(e.target.value));
+                    }}
+                    value={values.locationId}
+                  >
+                    <option value="">Select Location</option>
+                    {locations!.map((lot: any) => (
+                      <option key={lot.idLocation} value={lot.idLocation}>
+                        {lot.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ErrorMessage
+                    name="categoryId"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+
+                {/* <div>
+                  <label htmlFor="locationId">Location</label>
+                  <Field
+                    as="select"
+                    name="locationId"
+                    className="border p-2"
+                    value={values.locationId}
+                    onChange={(e: any) => {
+                      setFieldValue('locationId', Number(e.target.value));
+                    }}
+                  >
+                    <option value="">Select Location</option>
+                    {locations &&
+                      locations.map((location: any) => (
+                        <option key={location.id} value={location.id}>
+                          {location.name}
+                        </option>
+                      ))}
+                  </Field>
+                  <ErrorMessage
+                    name="locationId"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div> */}
 
                 <button type="submit">Submit</button>
               </div>

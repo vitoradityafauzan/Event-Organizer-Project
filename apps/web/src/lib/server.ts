@@ -1,10 +1,9 @@
-<<<<<<< HEAD
 'use server';
 import { cookies } from 'next/headers';
 
 // Set Base Url Of API
 const base_url =
-  process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000/api/';
+  process.env.BASE_URL_API || 'http://localhost:8000/api/';
 
 // Setting Cookies
 const cookiesStore = cookies();
@@ -52,11 +51,7 @@ export async function getCategoriesLocationsHome() {
 export async function deleteCategoriesLocations() {
     cookiesStore.delete('categories');
     cookiesStore.delete('locations');
-=======
-'use server'
-
-import { cookies } from "next/headers"
-import Cookies from 'js-cookie';
+}
 
 export async function createToken(token: string) {
     const oneDay = 24 * 60 * 60 * 1000
@@ -69,5 +64,4 @@ export async function getToken() {
 
 export async function deleteToken() {
     cookies().delete('token')
->>>>>>> main
 }

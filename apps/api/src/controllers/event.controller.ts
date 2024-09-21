@@ -144,9 +144,15 @@ export class EventController {
 
       const locationn = parseInt(req.body.locationId);
       const pricee = parseInt(req.body.price);
-      const amountt = parseInt(req.body.price);
+      const amountt = parseInt(req.body.amount);
       const category = parseInt(req.body.categoryId);
-      const organizer = parseInt(req.body.organizerId);
+      let organizer: number;
+
+      if (req.body.organizerId == '' || req.body.organizerId == null || req.body.organizerId == undefined) {
+        organizer = 1;
+      } else {
+        organizer = parseInt(req.body.organizerId);
+      }
 
       console.log(locationn, ' ', startDate, ' ', endDate, 'dsds');
 

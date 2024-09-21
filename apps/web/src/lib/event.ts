@@ -1,21 +1,62 @@
-import { EventPost } from '@/type/event';
+import { EventPost, FormEventCreate } from '@/type/event';
 
 const base_url =
-  process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000/api/';
+  process.env.BASE_URL_API || 'http://localhost:8000/api/';
 
-export const postEvent = async (data: EventPost) => {
-  const res = await fetch(`${base_url}event/`, {
+// export const postEvent = async (data: FormEventCreate) => {
+//   const postData: EventPost = {
+//     name: data.name,
+//     slug: data.slug,
+//     desc: data.desc,
+//     image: data.image,
+//     price: data.price,
+//     amount: data.amount,
+//     categoryId: data.categoryId,
+//     locationId: data.locationId,
+//     startDate: `${data.startDate}, ${data.startTime}:00`,
+//     endDate: `${data.endDate}, ${data.endTime}:00`
+//   }
+
+//   const res = await fetch(`${base_url}event`, {
+//     method: 'POST',
+//     body: JSON.stringify(postData),
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   });
+
+//   const result = await res.json();
+
+//   return { result };
+// };
+
+export const postEvent = async (data: FormEventCreate) => {
+  const postData = new FormData();
+  postData.append('name', data.name);
+  postData.append('slug', data.slug);
+  postData.append('desc', data.desc);
+  if (data.image instanceof File) {
+    postData.append('image', data.image);
+  } else {
+    postData.append('image', new File([data.image], "default.png"));
+  }
+  postData.append('price', data.price.toString());
+  postData.append('amount', data.amount.toString());
+  postData.append('locationId', data.locationId.toString());
+  postData.append('categoryId', data.categoryId.toString());
+  postData.append('startDate', `${data.startDate}, ${data.startTime}:00`);
+  postData.append('endDate', `${data.endDate}, ${data.endTime}:00`);
+
+  const res = await fetch(`${base_url}event`, {
     method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    body: postData, // Send formData here
   });
 
   const result = await res.json();
 
-  return { result, ok: res.ok };
+  return { result };
 };
+
 
 export const getEventList = async /*(search: string)*/ (search: string, category: string, location: string) => {
   console.log('event lib, fetching event list start');

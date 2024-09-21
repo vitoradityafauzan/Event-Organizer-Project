@@ -18,7 +18,7 @@ export interface EventPost {
     name: string;
     slug: string;
     desc: string;
-    image: string;
+    image: File | string;
     price: number;
     amount: number;
     locationId: number;
@@ -31,7 +31,7 @@ export interface FormEventCreate {
     name: string;
     slug: string;
     desc: string;
-    image: string;
+    image: any;
     price: number;
     amount: number;
     locationId: number;
