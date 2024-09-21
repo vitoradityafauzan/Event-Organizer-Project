@@ -21,7 +21,7 @@ const Profile: React.FC = () => {
 
   return (
     <Wrapper>
-      <div className="lg:basis-[20%] pr-4 drawer lg:drawer-open  border-2">
+      <div className="w-fit pr-4 drawer lg:drawer-open  border-2">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col items-center justify-center">
           <label
@@ -37,7 +37,7 @@ const Profile: React.FC = () => {
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full lg:bg-slate-50 w-60 md:w-80">
+          <ul className="menu bg-base-200 text-base-content min-h-full lg:bg-slate-50 w-60 md:w-64">
             {/* Sidebar content here */}
             <li>
               <a onClick={() => setVisible('A')}>Profile Info</a>

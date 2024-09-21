@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React from 'react';
@@ -39,11 +40,11 @@ const Header = () => {
     setToken('');
   };
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  // const toggleSidebar = () => {
+  //   setSidebarOpen(!sidebarOpen);
+  // };
 
   useEffect(() => {
     getData();
@@ -75,26 +76,39 @@ const Header = () => {
                 />
               </svg>
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
-            >
-              <li>
-                <Link href="/">Homepage</Link>
-              </li>
-              <li>
-                <Link href="/event">Events</Link>
-              </li>
-              <li>
-                <Link href="/testing">Testing</Link>
-              </li>
-            </ul>
+            {(token || user.id  && checkRole(Role.Attendees)) ? (
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
+              >
+                <li>
+                  <Link href="/">Homepage</Link>
+                </li>
+                <li>
+                  <Link href="/organizer/manage-event">Manage Events</Link>
+                </li>
+              </ul>
+            ) : (
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
+              >
+                <li>
+                  <Link href="/">Homepage</Link>
+                </li>
+                <li>
+                  <Link href="/event">Events</Link>
+                </li>
+                <li>
+                  <Link href="/testing">Testing</Link>
+                </li>
+              </ul>
+            )}
+            
           </div>
         </div>
         <div className="navbar-center border-2">
-          <Link href="/" className="text-xl p-2 hover:bg-slate-200">
-            Icon
-          </Link>
+          <Link href="/" className='text-xl p-2 hover:bg-slate-200'>La Memoria Infinita</Link>
         </div>
         <div className="navbar-end">
           <SearchModal />

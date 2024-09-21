@@ -7,7 +7,7 @@ interface ILandingWrapProps {
 
 export const LandingWrap: React.FC<ILandingWrapProps> = ({children, additional}) => {
     return (
-        <div className={`flex flex-col border-4 border-red-600 ${additional}`}>
+        <div className={`flex flex-col ${additional}`}>
             {children}
         </div>
     )
