@@ -43,7 +43,7 @@ const Register: React.FC = () => {
       password,
       phone,
       userType,
-      referralCode: userType === 'Experience' ? referralCode : undefined,
+      referralCode: userType === 'Attendees' ? referralCode : undefined,
     };
 
     // Send data to backend
@@ -242,7 +242,7 @@ const Register: React.FC = () => {
                 </label>
               </div>
 
-              {userType === 'Experience' && (
+              {userType === 'Attendees' && (
                 <div className="relative z-0 w-full mb-5 group">
                   <input
                     type="text"

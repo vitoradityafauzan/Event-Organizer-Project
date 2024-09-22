@@ -127,7 +127,7 @@ const Header = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              className="menu menu-sm dropdown-content  rounded-box z-[1] mt-3 w-52 p-2 shadow bg-white"
             >
               {token || user.id ? (
                 <div>
@@ -138,30 +138,54 @@ const Header = () => {
                         role="button"
                         className="btn bg-opacity-0 text-black bg-zinc-900 text-[15px]"
                       >
-                        {user.firstName + ' ' + user.lastName}
+                        <Link href="/profile">
+                          {user.firstName + ' ' + user.lastName}
+                        </Link>
+                        <FiUser />
                       </div>
                       <ul
                         tabIndex={0}
-                        className="dropdown-content menu bg-base-100 rounded-box z-[1] w-44 p-2 shadow"
+                        className="dropdown-content menu bg-base-100 rounded-box z-[1] w-44 p-2 shadow left-1 mt-2 w-[12rem] text-white bg-black"
                       >
                         <li>
-                          <Link href={'/my-event'}>My Event</Link>
+                          <Link
+                            href={'/my-event'}
+                            className="hover:bg-gray-600"
+                          >
+                            My Event
+                          </Link>
                         </li>
                         <li>
-                          <Link href={'/dashboard'}>Dashbord</Link>
+                          <Link
+                            href={'/dashboard'}
+                            className="hover:bg-gray-600"
+                          >
+                            Dashbord
+                          </Link>
                         </li>
                         <li>
-                          <Link href={'/account-settings'}>
+                          <Link
+                            href={'/account-settings'}
+                            className="hover:bg-gray-600"
+                          >
                             Account Setting
                           </Link>
+                        </li>
+                        <li className="mt-4 flex justify-center items-center">
+                          <div
+                            onClick={onLogout}
+                            className="bg-gray-600 hover:bg-gray-400"
+                          >
+                            LogOut
+                          </div>
                         </li>
                       </ul>
                     </div>
                   )}
 
                   {checkRole(Role.Organizer) && (
-                    <div className="dropdown dropdown-end">
-                      <div className="flex items-center gap-[30px]">
+                    <div className="dropdown dropdown-end bg-white">
+                      <div className="flex items-center gap-[30px] bg-white rounded-md">
                         <h1 className="flex items-center gap-1 text-black font-bold text-[15px]">
                           <Image src={coin} alt="coin" width={30} />
                           {user.points}
@@ -170,9 +194,9 @@ const Header = () => {
                           <div
                             tabIndex={0}
                             role="button"
-                            className="btn bg-opacity-0 text-black  bg-zinc-900  text-[15px] pb-16"
+                            className="btn bg-opacity-0 text-black bg-zinc-900  text-[15px] pb-16 "
                           >
-                            <div className="pt-2 flex flex-col justify-center items-center">
+                            <div className="pt-2 flex flex-col justify-center items-center ">
                               <FiUser />
                               <Link href="/profile">
                                 {user.firstName + ' ' + user.lastName}
@@ -181,7 +205,7 @@ const Header = () => {
                           </div>
                           <ul
                             tabIndex={0}
-                            className="dropdown-content menu bg-black text-white bg-base-100 rounded-box z-[1] w-52 p-2 shadow mt-2"
+                            className="dropdown-content menu bg-black text-white bg-base-100 rounded-box z-[1] w-52 p-2 shadow mt-2 "
                           >
                             <li>
                               <Link
@@ -199,10 +223,10 @@ const Header = () => {
                                 Account Setting
                               </Link>
                             </li>
-                            <li>
+                            <li className="mt-4 flex justify-center items-center">
                               <div
                                 onClick={onLogout}
-                                className="hover:bg-gray-600"
+                                className="bg-gray-600 hover:bg-gray-400"
                               >
                                 LogOut
                               </div>

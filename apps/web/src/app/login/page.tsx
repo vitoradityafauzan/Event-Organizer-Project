@@ -13,6 +13,7 @@ const LoginID: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isValid, setIsValid] = useState(true);
+  const [isRememberChecked, setIsRememberChecked] = useState(false);
   const router = useRouter();
 
   const dispatch = useAppDispatch();
@@ -24,6 +25,13 @@ const LoginID: React.FC = () => {
     if (!email || !password) {
       setIsValid(false);
       return;
+    }
+
+    if (!isRememberChecked === true) {
+      toast.error('Please Check The Remember me');
+      return;
+    } else {
+      setIsRememberChecked(true);
     }
 
     // Prepare data
@@ -49,6 +57,9 @@ const LoginID: React.FC = () => {
       console.error('Unexpected error:', error);
       toast.error('An unexpected error occurred. Please try again.');
     }
+  };
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsRememberChecked(event.target.checked);
   };
 
   return (
@@ -111,14 +122,20 @@ const LoginID: React.FC = () => {
                     id="remember"
                     type="checkbox"
                     className="w-4 h-4 border border-gray-600 rounded bg-gray-600 focus:ring-3 focus:ring-Dark-blue dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+                    onChange={handleCheckboxChange}
                   />
                 </div>
                 <label
                   htmlFor="remember"
-                  className="ms-2 text-sm font-medium text-black dark:text-gray-300"
+                  className="ms-2 text-sm font-medium text-black dark:text-gray-300 required:checked"
                 >
                   Remember me
                 </label>
+                {!isValid && !password && !isRememberChecked && (
+                  <p className="text-red-500 text-sm">
+                    Please Check The Remember me
+                  </p>
+                )}
               </div>
               <button
                 onClick={handleSubmit}
