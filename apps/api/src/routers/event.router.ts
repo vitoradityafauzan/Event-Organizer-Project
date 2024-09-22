@@ -22,6 +22,8 @@ export class EventRouter {
       this.eventController.createEvents,
     );
 
+    this.router.get('/category-location', this.eventController.getCategoryLocation)
+
     // this.router.post('/', this.eventController.createEvents)
   }
 

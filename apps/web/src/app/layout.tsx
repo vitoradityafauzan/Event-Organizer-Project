@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { ContextGlobalProvider } from '@/context/Context';
+import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StoreProvider from '@/components/StoreProvider';
@@ -22,18 +24,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StoreProvider>
-          <Header />
-          {children}
-          <Footer />
-        </StoreProvider>
-
-        <ToastContainer
-          position="bottom-right"
-          autoClose={3000}
-          closeOnClick
-          draggable
-        />
+          <StoreProvider>
+            <ContextGlobalProvider>
+              <Header />
+              {children}
+              <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                closeOnClick
+                draggable
+              />
+              <Footer />
+            </ContextGlobalProvider>
+          </StoreProvider>
       </body>
     </html>
   );

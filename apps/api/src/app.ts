@@ -13,6 +13,7 @@ import { PORT } from './config';
 import { UserRouter } from './routers/user.router';
 // import { ReferralRouter } from './routers/referral.router';
 import { EventRouter } from './routers/event.router';
+import path from 'path';
 // import { DashboardRouter } from './routers/dashboard.router';
 // import { TicketRouter } from './routers/ticket.router';
 

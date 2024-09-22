@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2015",
-    "types": ["../../../Event-Organizer-Project/apps/api/src/custom.d.ts"],
+    "types": ["./src/custom.d.ts"],
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
