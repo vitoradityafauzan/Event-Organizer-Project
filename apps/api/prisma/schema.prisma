@@ -62,6 +62,7 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   Event     Event[]
+  Ticket    Ticket[]
 }
 
 
@@ -101,4 +102,19 @@ model Event {
   user     User     @relation(fields: [organizerId], references: [idUser])
   category Category @relation(fields: [categoryId], references: [idCategory])
   location Location @relation(fields: [locationId], references: [idLocation])
+  
+}
+
+model Ticket {
+  id           Int      @id @default(autoincrement())
+  eventId      Int
+  userId       Int
+  purchaseDate DateTime @default(now())
+  price        Float
+  status       String   @default("Active")
+
+  // Relations
+  // event Event @relation("EventTickets", fields: [eventId], references: [id])
+  // user  User  @relation("UserTickets", fields: [userId], references: [id])
+  user User @relation( fields: [userId], references: [idUser])
 }
