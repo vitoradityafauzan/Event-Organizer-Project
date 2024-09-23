@@ -10,21 +10,21 @@ import { useContextGlobal } from '@/context/Context';
 import { useEffect } from 'react';
 
 const Home: React.FC = () => {
-  const { categories, locations, fetchCategoriesLocations } =
-    useContextGlobal();
+  // const { categories, locations, fetchCategoriesLocations } =
+  //   useContextGlobal();
 
-  useEffect(() => {
-    if (!categories && !locations) {
-      console.log("Home, global state not there");
+  // useEffect(() => {
+  //   if (!categories && !locations) {
+  //     console.log("Home, global state not there");
 
-      fetchCategoriesLocations();
-    }
-  }, [categories, locations, fetchCategoriesLocations]);
+  //     fetchCategoriesLocations();
+  //   }
+  // }, [categories, locations, fetchCategoriesLocations]);
 
-  useEffect(() => {
-    console.log('Home component, checking categories\n', categories);
+  // useEffect(() => {
+  //   console.log('Home component, checking categories\n', categories);
     
-  }, [categories])
+  // }, [categories])
 
   return (
     <Wrapper additional="flex-col gap-32">

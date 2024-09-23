@@ -1,6 +1,10 @@
 import { EventController } from '@/controllers/event.controller';
+import { verifyToken } from '@/middlewares/token';
 import { uploader } from '@/middlewares/uploader';
 import { Router } from 'express';
+import multer from 'multer';
+
+const testUpload = multer();
 
 export class EventRouter {
   private router: Router;
@@ -15,16 +19,21 @@ export class EventRouter {
   private initializeRoutes(): void {
     this.router.get('/', this.eventController.getEvents);
 
+    this.router.get('/user/:userId', this.eventController.getEvents);
+
     this.router.post(
       '/',
       uploader('event-', '/event').single('image'),
-      //
+      verifyToken,
       this.eventController.createEvents,
     );
 
     this.router.get('/category-location', this.eventController.getCategoryLocation)
 
-    // this.router.post('/', this.eventController.createEvents)
+    this.router.get('/:slug', this.eventController.getEventSlug)
+
+    this.router.post('/voucher', testUpload.none(), verifyToken, this.eventController.createVoucher)
+
   }
 
   getRouter(): Router {

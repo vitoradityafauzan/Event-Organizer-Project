@@ -14,6 +14,21 @@ export interface IEvent {
     location: any;
 }
 
+export interface IEventSlug {
+    name: string;
+    slug: string;
+    desc: string;
+    image: string;
+    price: number;
+    amount: number;
+    locationId: number;
+    categoryId: number;
+    startDate: string;
+    endDate: string;
+    category: any;
+    location: any;
+}
+
 export interface EventPost {
     name: string;
     slug: string;
@@ -47,4 +62,9 @@ export interface CategoryLocationFetch {
     nameCategory: string;
     idLocation: number;
     nameLocation: string;
+}
+
+export interface CreateVoucher {
+    eventId: number;
+    amount: number;
 }

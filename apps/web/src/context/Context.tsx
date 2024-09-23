@@ -2,28 +2,36 @@
 import { createContext, useState, useContext, ReactNode } from 'react';
 import {
   createCategoriesLocations,
+  createCategoriesLocations2,
   deleteCategoriesLocations,
   getCategoriesLocationsHome,
+  getToken,
 } from '@/lib/server';
+import { DecodedToken, IUserSimple } from '@/type/user';
+import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+import { cookies } from 'next/headers';
 
 // Define the structure for our context value
 interface ContextGlobalType {
-  categories: any[] | null;
-  locations: any[] | null;
+  categories: any | null;
+  locations: any | null;
   fetchCategoriesLocations: () => Promise<void>;
+  userData: IUserSimple | null;
+  fetchUser: () => Promise<void>;
 }
 
-interface IData {
-  categoryList: any[] | null;
-  locationList: any[] | null;
-}
+// interface IData {
+//   categoryList: any | null;
+//   locationList: any | null;
+//   userData: IUserSimple | null;
+// }
 
 // Create the context with a default value
 const ContextGlobal = createContext<ContextGlobalType | undefined>(undefined);
 
 // Set Base Url Of API
-const base_url =
-  process.env.BASE_URL_API || 'http://localhost:8000/api/';
+const base_url = process.env.BASE_URL_API || 'http://localhost:8000/api/';
 
 // Provider component to wrap around the application
 export const ContextGlobalProvider = ({
@@ -31,56 +39,103 @@ export const ContextGlobalProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [categories, setCategories] = useState<any[] | null>(null);
-  const [locations, setLocations] = useState<any[] | null>(null);
+  const [categories, setCategories] = useState<any | null>(null);
+  const [locations, setLocations] = useState<any | null>(null);
+  const [userData, setUserData] = useState<IUserSimple | null>(null);
 
   const fetchCategoriesLocations = async () => {
-    const data: any = await getCategoriesLocationsHome();    
+    const data = await createCategoriesLocations2();
+    console.log('data result, ', data);
 
-    console.log('fetchCategoriesLocations start');        
-    
-    console.log(data.categoryList[0].name == undefined ? 'is undefined' : 'is defined');
-    
-    if (data.categoryList[0].name == undefined || data.categoryList[0] == 'not-found') {
+    setCategories(data.category);
+    setLocations(data.location);
+  };
 
-      await createCategoriesLocations();
+  // const fetchCategoriesLocations = async () => {
+  //   if (cookies().has('categories') && cookies().has('locations')) {
+  //     const dataCategory: any = cookies().get('categories')?.value;
+  //     const dataLocation: any = cookies().get('locations')?.value;
 
-      const data2: any = await getCategoriesLocationsHome();
+  //     setCategories(dataCategory);
+  //     setLocations(dataLocation);
+  //   } else {
+  //     setCategories(['token expired/undefined'])
+  //     setLocations(['token expired/undefined'])
+  //   }
+  // };
 
-      console.log('Cookies Set \n');
+  // const fetchCategoriesLocations = async () => {
+  //   if (cookies().has('categories') && cookies().has('locations')) {
+  //     const dataCategory: any = cookies().get('categories')?.value;
+  //     const dataLocation: any = cookies().get('locations')?.value;
 
-      console.log(typeof data2.categoryList, ' => ');
-      console.log(data2.categoryList[0]);
+  //     setCategories(dataCategory);
+  //     setLocations(dataLocation);
+  //   } else {
+  //     const response = await fetch(`${base_url}event/category-location`);
+  //     const data = await response.json();
+  //     const oneDay = 24 * 60 * 60 * 1000;
 
-      console.log(typeof data2.locationList, ' => ');
-      console.log(data2.locationList);
+  //     cookies().set('categories', data.category, {
+  //       expires: Date.now() + oneDay,
+  //     });
 
-      setCategories(data2.categoryList);
-      setLocations(data2.locationList);
-    } else {
-      console.log('Cookies Detected');
+  //     cookies().set('locations', data.location, {
+  //       expires: Date.now() + oneDay,
+  //     });
 
-      console.log(typeof data.categoryList, ' => ');
-      console.log(data.categoryList[0].name);
-      
-      console.log(typeof data.locationList, ' => ');
-      console.log(data.locationList);
+  //     setCategories(data.category);
+  //     setLocations(data.location);
+  //   }
+  // };
 
-      // await deleteCategoriesLocations();
-      // console.log('Cookies Deleted');
+  const fetchUser = async () => {
+    try {
+      const token = await getToken();
+      if (!token) throw new Error('No token found');
 
-      // console.log(data.categoryList[0].idCategory, " - ", data.categoryList[0].name);
-      
+      // Decode the token to get user info
+      const decodedToken: DecodedToken = jwtDecode<DecodedToken>(token);
+      const userId = decodedToken.id;
 
-      setCategories(data.categoryList);
-      setLocations(data.locationList);
-      //
+      if (!userId) throw new Error('User ID not found in token');
+
+      const response = await fetch(`${base_url}user/${userId}`, {
+        // Adjusted URL to use user ID
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data: any = await response.json();
+
+      if (response.ok) {
+        setUserData({
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          phone: data.user.phone,
+          email: data.user.email,
+          id: data.user.idUser,
+        });
+      } else {
+        toast.error(data.msg || 'Failed to fetch user data.');
+      }
+    } catch (error) {
+      toast.error('An error occurred while fetching user data.');
     }
   };
 
   return (
     <ContextGlobal.Provider
-      value={{ categories, locations, fetchCategoriesLocations }}
+      value={{
+        categories,
+        locations,
+        fetchCategoriesLocations,
+        userData,
+        fetchUser,
+      }}
     >
       {children}
     </ContextGlobal.Provider>

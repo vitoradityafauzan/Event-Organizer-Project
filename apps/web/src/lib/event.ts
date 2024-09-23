@@ -1,7 +1,7 @@
-import { EventPost, FormEventCreate } from '@/type/event';
+import { CreateVoucher, EventPost, FormEventCreate } from '@/type/event';
+import { getToken } from './server';
 
-const base_url =
-  process.env.BASE_URL_API || 'http://localhost:8000/api/';
+const base_url = process.env.BASE_URL_API || 'http://localhost:8000/api/';
 
 // export const postEvent = async (data: FormEventCreate) => {
 //   const postData: EventPost = {
@@ -38,7 +38,7 @@ export const postEvent = async (data: FormEventCreate) => {
   if (data.image instanceof File) {
     postData.append('image', data.image);
   } else {
-    postData.append('image', new File([data.image], "default.png"));
+    postData.append('image', new File([data.image], 'default.png'));
   }
   postData.append('price', data.price.toString());
   postData.append('amount', data.amount.toString());
@@ -47,9 +47,17 @@ export const postEvent = async (data: FormEventCreate) => {
   postData.append('startDate', `${data.startDate}, ${data.startTime}:00`);
   postData.append('endDate', `${data.endDate}, ${data.endTime}:00`);
 
+  const token = await getToken();
+  if (!token) throw new Error('No token found');
+
+  console.log('Check token before post,',token);
+
   const res = await fetch(`${base_url}event`, {
     method: 'POST',
     body: postData, // Send formData here
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   const result = await res.json();
@@ -57,31 +65,67 @@ export const postEvent = async (data: FormEventCreate) => {
   return { result };
 };
 
+export const postVoucher = async (data: CreateVoucher) => {
+  const postData = new FormData();
+  postData.append('eventId', data.eventId.toString());
+  postData.append('amount', data.amount.toString());
 
-export const getEventList = async /*(search: string)*/ (search: string, category: string, location: string) => {
+  const token = await getToken();
+  if (!token) throw new Error('No token found');
+
+  console.log('Check token before post,',token);
+  
+
+  const res = await fetch(`${base_url}event/voucher`, {
+    method: 'POST',
+    body: postData, // Send formData here
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await res.json();
+
+  return { result };
+};
+
+export const getEventList = async (
+  /*(search: string)*/ search: string,
+  category: string,
+  location: string,
+) => {
   console.log('event lib, fetching event list start');
 
-  console.log('search query-',search,', category query-',category, ', location-',location);
+  console.log(
+    'search query-',
+    search,
+    ', category query-',
+    category,
+    ', location-',
+    location,
+  );
 
   // const res = await fetch(`${base_url}event`);
-  const res = await fetch(`${base_url}event?search=${search}&category=${category}&location=${location}`);
+  const res = await fetch(
+    `${base_url}event?search=${search}&category=${category}&location=${location}`,
+  );
   // const res = await fetch(`${base_url}event?search=${search}`);
   const result = await res.json();
   // let events: (string | number)[] = [];
 
   if (result.status != 'ok') {
     console.log('fetching failed');
-    
-    throw new Error('Failed to fetch events');
+
+    throw new Error(result.msg);
   } else {
     console.log('fetching success');
 
-    return {events: [...result.events]}
-    
+    return { events: [...result.events] };
+
     // events = [...result.events];
 
     // console.log(events);
-    
+
     // return events;
   }
 
@@ -96,38 +140,84 @@ export const getEventSneakPeak = async () => {
   // console.log(result);
 
   if (result.status != 'ok') {
-    throw new Error('Failed to fetch events');
+    throw new Error(result.msg);
+  } else {
+    // console.log('Event Sneak Peak');
+
+    // console.log('event data, ', result.events);
+
+    for (let i = 0; i <= 2; i++) {
+      if (result.events[i] == null || result.events[i] == undefined) break;
+      // console.log('loop,',i);
+      // console.log('status,',result.ok);
+
+      events.push(result.events[i]);
+    }
+
+    // console.log('loop result,', events);
+
+    return events;
   }
+};
 
-  // console.log('Event Sneak Peak');
+export const getEventBySlug = async (slug: string) => {
+  console.log('Fetching event by slug');
 
-  // console.log('event data, ', result.events);
+  const res = await fetch(`${base_url}event/${slug}`, {
+    next: { revalidate: 3600 },
+  });
 
-  for (let i = 0; i <= 2; i++) {
-    if (result.events[i] == null || result.events[i] == undefined) break;
-    // console.log('loop,',i);
-    // console.log('status,',result.ok);
+  const result = await res.json();
 
-    events.push(result.events[i]);
+  if (result.status != 'ok') {
+    throw new Error(result.msg);
+  } else {
+    console.log('Fetching event by slug success');
+
+    console.log(result);
+
+    return { event: result.event };
   }
+};
 
-  // console.log('loop result,', events);
+export const getEventByUser = async (userId: string | number) => {
+  // console.log('Fetching event by user');
 
-  return events;
+  const res = await fetch(`${base_url}event/user/${userId}`, {
+    next: { revalidate: 3600 },
+  });
+
+  const result = await res.json();
+
+  if (result.status != 'ok') {
+    throw new Error(result.msg);
+  } else {
+    console.log('Fetching event by userId success');
+
+    console.log(result);
+
+    const event: any[] | null = result.events;
+
+    return event;
+  }
 };
 
 export const getLocationAndCategory = async () => {
-  const res = await fetch(`${base_url}/event/category-location`);
+  const res = await fetch(`${base_url}event/category-location`);
   console.log('Fetching Categories and Locations, Lib Server');
 
   const result = await res.json();
 
   console.log(result);
 
-  return {
-    result,
-    locations: result.location,
-    categories: result.category,
-    ok: res.ok,
-  };
+  if (result.status != 'ok') {
+    throw new Error('Failed to fetch events');
+  } else {
+    return {
+      result,
+      locations: result.location,
+      categories: result.category,
+      ok: res.ok,
+    };
+  }
 };

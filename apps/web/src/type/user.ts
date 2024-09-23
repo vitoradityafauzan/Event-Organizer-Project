@@ -40,20 +40,20 @@ export interface IUserState {
   points: number;
 }
 
-export interface Event {
-  id: number;
-  image: string;
-  name: string;
-  location: string;
-  eventDate: string;
-  eventTime: string;
-  sellEndDate: string;
-  sellEndTime: string;
-  isPaidEvent: boolean;
-  price: number;
-  availableSeats: number;
-  ticket: Ticket;
-}
+// export interface Event {
+//   id: number;
+//   image: string;
+//   name: string;
+//   location: string;
+//   eventDate: string;
+//   eventTime: string;
+//   sellEndDate: string;
+//   sellEndTime: string;
+//   isPaidEvent: boolean;
+//   price: number;
+//   availableSeats: number;
+//   ticket: Ticket;
+// }
 
 export interface DashboardData {
   fullName: string;
@@ -83,4 +83,12 @@ export interface TicketDetails {
   tickets: Ticket[];
   ticket: Ticket;
   event: Event;
+}
+
+export interface IUserSimple {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  id: number;
 }

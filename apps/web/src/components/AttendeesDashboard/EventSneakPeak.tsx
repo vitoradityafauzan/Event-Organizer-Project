@@ -43,7 +43,7 @@ export default function EventSneakPeak() {
     <div id='sneakPeakRadial' className='gap-5 p-2'>
       <h1 className='ml-5 text-[#bd9b78] text-4xl font-bold'>Events</h1>
       
-      <div className='flex flex-wrap flex-col gap-5 p-5 md:flex-row'> 
+      <div className='flex flex-wrap flex-col justify-around gap-8 p-5 md:flex-row'> 
         {!data 
         ? displaySkeleton()
         : data.map((d: any) => (
@@ -55,10 +55,8 @@ export default function EventSneakPeak() {
             //   <p>{d.desc}</p>
             //   <h2>{d.price}</h2>
             // </div>
-            <>
-            <CardEvent loopKey={d.idEvent} name={d.name} desc={d.desc} image={d.image} startDate={d.startDate} />
-            </>
-            
+
+            <CardEvent key={d.idEvent} loopKey={d.idEvent} name={d.name} slug={d.slug} desc={d.desc} image={d.image} startDate={d.startDate} endDate={d.endDate} />
           ))}
           
       </div>

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../prisma';
 import { format, formatISO, isMatch } from 'date-fns';
 import { Prisma } from '@prisma/client';
+import { log } from 'console';
 
 const port = process.env.PORT;
 
@@ -34,42 +35,46 @@ const port = process.env.PORT;
 export class EventController {
   async getEvents(req: Request, res: Response) {
     try {
-        const { search } = req.query;
+      const { search } = req.query;
 
-        const filterCategory = req.query.category as string | undefined;
-        const category = filterCategory ? parseInt(filterCategory, 10) : undefined;
+      const filterCategory = req.query.category as string | undefined;
+      const category = filterCategory
+        ? parseInt(filterCategory, 10)
+        : undefined;
 
-        const filterLocation = req.query.location as string | undefined;
-        const location = filterLocation ? parseInt(filterLocation, 10) : undefined;
+      const filterLocation = req.query.location as string | undefined;
+      const location = filterLocation
+        ? parseInt(filterLocation, 10)
+        : undefined;
 
-        let filter: Prisma.EventWhereInput = {};
+      let filter: Prisma.EventWhereInput = {};
 
-        if (search) {
-          filter.name = { contains: search as string };
-        }
+      if (search) {
+        filter.name = { contains: search as string };
+      }
 
-        if (category || category != undefined) {
-          filter.categoryId = category;
-        }
+      if (category || category != undefined) {
+        filter.categoryId = category;
+      }
 
-        if (location || location != undefined) {
-          filter.locationId = location;
-        }
+      if (location || location != undefined) {
+        filter.locationId = location;
+      }
 
-        const events = await prisma.event.findMany({
-          where: filter,
-          include: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
-                email: true,
-              },
+      const events = await prisma.event.findMany({
+        where: filter,
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
             },
-            category: true,
-            location: true,
           },
-        });
+          category: true,
+          location: true,
+        },
+      });
 
       // const events = await prisma.event.findMany({
       //   include: {
@@ -98,26 +103,81 @@ export class EventController {
     }
   }
 
+  async getEventSlug(req: Request, res: Response) {
+    try {
+      if (req.params.slug == undefined || req.params.slug == 'undefined')
+        throw 'Slug Not Recognized';
+
+      console.log('API, getting event by slug');
+      const event = await prisma.event.findFirst({
+        where: { slug: req.params.slug },
+        include: { category: true, location: true },
+        orderBy: { createdAt: 'desc' }
+    })  
+    console.log('API, get event by slug success');
+
+    console.log(event);
+
+    res.status(200).send({
+        status: 'ok',
+        event
+    })
+    } catch (err) {
+      res.status(400).send({
+        status: 'error',
+        msg: err,
+      });
+    }
+  }
+
+  async getEventByUser(req: Request, res: Response) {
+    try {
+      if (req.params.userId == undefined || req.params.userId == 'undefined')
+        throw 'ID Not Recognized';
+
+      // console.log('API, getting event by user id');
+      const event = await prisma.event.findMany({
+        where: { organizerId: parseInt(req.params.userId),},
+        select: {
+          idEvent: true,
+          name: true
+        }
+    })  
+    // console.log('API, get event by user id success');
+
+    // console.log(event);
+
+    res.status(200).send({
+        status: 'ok',
+        event
+    })
+    } catch (err) {
+      res.status(400).send({
+        status: 'error',
+        msg: err,
+      });
+    }
+  }
+
   async getCategoryLocation(req: Request, res: Response) {
     try {
-
       const category = await prisma.category.findMany();
-  
+
       const location = await prisma.location.findMany();
 
       res.status(200).send({
-            status: 'ok',
-            category,
-            location
-          });
-          //
-        } catch (err) {
-          res.status(400).send({
-            status: 'error',
-            msg: err,
-          });
-        }
-      }
+        status: 'ok',
+        category,
+        location,
+      });
+      //
+    } catch (err) {
+      res.status(400).send({
+        status: 'error',
+        msg: err,
+      });
+    }
+  }
 
   async createEvents(req: Request, res: Response) {
     try {
@@ -131,16 +191,18 @@ export class EventController {
 
       const { name, slug, desc, startDate, endDate } = req.body;
 
-      console.log('original date = -', req.body.startDate,'-');
-      
+      console.log('original date = -', req.body.startDate, '-');
 
-      console.log('Checking date, ', isMatch(req.body.startDate, 'yyyy-MM-dd, HH:mm:ss'));
-      
+      console.log(
+        'Checking date, ',
+        isMatch(req.body.startDate, 'yyyy-MM-dd, HH:mm:ss'),
+      );
 
       if (
         !isMatch(req.body.startDate, 'yyyy-MM-dd, HH:mm:ss') &&
         !isMatch(req.body.endDate, 'yyyy-MM-dd, HH:mm:ss')
-      ) throw "Date And/Or Time Format Is Incorrect!";
+      )
+        throw 'Date And/Or Time Format Is Incorrect!';
 
       const locationn = parseInt(req.body.locationId);
       const pricee = parseInt(req.body.price);
@@ -148,7 +210,11 @@ export class EventController {
       const category = parseInt(req.body.categoryId);
       let organizer: number;
 
-      if (req.body.organizerId == '' || req.body.organizerId == null || req.body.organizerId == undefined) {
+      if (
+        req.body.organizerId == '' ||
+        req.body.organizerId == null ||
+        req.body.organizerId == undefined
+      ) {
         organizer = 1;
       } else {
         organizer = parseInt(req.body.organizerId);
@@ -161,17 +227,14 @@ export class EventController {
       );
 
       console.log('after find occupied');
-      
 
       if (!findOccupied) {
         console.log('event occupied');
-        
+
         throw 'An Event Already Set At Selected Location And Time!';
       }
-        
 
       console.log('after if find occupied');
-      
 
       const makeEvent = await prisma.event.create({
         data: {
@@ -203,4 +266,47 @@ export class EventController {
       });
     }
   }
+
+  async createVoucher(req: Request, res: Response) {
+    try {
+      console.log(req.user?.id);
+      
+      const eventIdd: number = parseInt(req.body.eventId);
+      
+      if (isNaN(eventIdd)) 
+        throw 'Something is wrong';  
+
+      const amountt: number = parseInt(req.body.amount);
+      if (isNaN(amountt)) 
+        throw 'Something is wrong';
+
+      const findExist = await prisma.promotion.findFirst({
+        where: {eventId: eventIdd}
+      })
+
+      if (findExist) throw 'Event Already Has A Discount!';
+
+      const postPromo = await prisma.promotion.create({
+        data: {
+          userId: req.user?.id,
+          type: 'voucher',
+          amount: amountt,
+          eventId: eventIdd
+        }
+      })
+
+      res.status(201).send({
+        status: 'ok',
+        msg: 'testing',
+        postPromo,
+      });
+    } catch (error) {
+      res.status(400).send({
+        status: 'error',
+        msg: error,
+      });
+    }
+  }
 }
+
+  
