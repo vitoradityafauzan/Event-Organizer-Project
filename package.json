@@ -8,6 +8,7 @@
     "serve": "turbo run serve",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install",
+    "create-hook": "husky add .husky/pre-commit \"npm test\"",
     "postprepare": "bash -c 'chmod ug+x .husky/*'"
   },
   "devDependencies": {

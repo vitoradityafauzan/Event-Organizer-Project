@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 import { Request, Response } from 'express';
 import { compare, genSalt, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { transporter } from '../helpers/nodemailer';
+
 import path from 'path';
 import fs from 'fs';
 import handlebars from 'handlebars';
@@ -58,8 +58,8 @@ export class UserController {
           });
         }
 
-        referralOwnerName = `${existingReferralCode.firstName} ${existingReferralCode.lastName}`;
-        referrerId = existingReferralCode.idUser;
+        // referralOwnerName = `${existingReferralCode.firstName} ${existingReferralCode.lastName}`;
+        // referrerId = existingReferralCode.id;
 
         // Create the new user with referral code
         user = await prisma.user.create({
@@ -75,19 +75,19 @@ export class UserController {
           },
         });
 
-        // Add points to the referrer and update total points
-        const pointsToAward = 10000;
+        // // Add points to the referrer and update total points
+        // const pointsToAward = 10000;
 
-        await prisma.user.update({
-          where: { idUser: referrerId },
-          data: {
-            points: {
-              increment: pointsToAward, // Increment referrer's total points
-            },
-          },
-        });
+        // await prisma.user.update({
+        //   where: { id: referrerId },
+        //   data: {
+        //     points: {
+        //       increment: pointsToAward, // Increment referrer's total points
+        //     },
+        //   },
+        // });
 
-        // Record point history
+        // // Record point history
         // await prisma.points.create({
         //   data: {
         //     userId: referrerId,
@@ -98,10 +98,10 @@ export class UserController {
         // });
 
         // Record the referral usage
-        // await prisma.referralCode.create({
+        // await prisma.referral.create({
         //   data: {
         //     referrerId: referrerId,
-        //     referredId: user.idUser,
+        //     referredId: user.id,
         //   },
         // });
       } else {
@@ -138,17 +138,17 @@ export class UserController {
         link: `http://localhost:3000/verify/${token}`,
       });
 
-      await transporter.sendMail({
-        from: process.env.MAIL_USER,
-        to: user.email,
-        subject: 'Welcome to CaloTiket',
-        html: html,
-      });
+      // await transporter.sendMail({
+      //   from: process.env.MAIL_USER,
+      //   to: user.email,
+      //   subject: 'Welcome to CaloTiket',
+      //   html: html,
+      // });
 
-      // Create a discount voucher for the newly created user
+      // // Create a discount voucher for the newly created user
       // await prisma.discount.create({
       //   data: {
-      //     userId: user.idUser, // User ID of the newly created user
+      //     userId: user.id, // User ID of the newly created user
       //     discountVoucher: 10, // 10% discount
       //     validUntil: new Date(new Date().setMonth(new Date().getMonth() + 3)), // Valid for 3 months
       //   },

@@ -76,7 +76,7 @@ const Header = () => {
                 />
               </svg>
             </div>
-            {(token || user.id  && checkRole(Role.Attendees)) ? (
+            {/* {token || (user.id && checkRole(Role.Attendees)) ? (
               <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
@@ -88,27 +88,32 @@ const Header = () => {
                   <Link href="/organizer/manage-event">Manage Events</Link>
                 </li>
               </ul>
-            ) : (
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
-              >
-                <li>
-                  <Link href="/">Homepage</Link>
-                </li>
-                <li>
-                  <Link href="/event">Events</Link>
-                </li>
-                <li>
-                  <Link href="/testing">Testing</Link>
-                </li>
-              </ul>
-            )}
-            
+            ) : ( */}
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
+            >
+              <li>
+                <Link href="/">Homepage</Link>
+              </li>
+              <li>
+                <Link href="/event">Events</Link>
+              </li>
+              <li>
+                <Link href={'/my-event'} className="hover:bg-gray-600">
+                  My Event
+                </Link>
+              </li>
+              <li>
+                <Link href="/testing">Testing</Link>
+              </li>
+            </ul>
           </div>
         </div>
         <div className="navbar-center border-2">
-          <Link href="/" className='text-xl p-2 hover:bg-slate-200'>La Memoria Infinita</Link>
+          <Link href="/" className="text-xl p-2 hover:bg-slate-200">
+            La Memoria Infinita
+          </Link>
         </div>
         <div className="navbar-end">
           <SearchModal />
@@ -149,20 +154,13 @@ const Header = () => {
                       >
                         <li>
                           <Link
-                            href={'/my-event'}
+                            href={'/my-ticket'}
                             className="hover:bg-gray-600"
                           >
-                            My Event
+                            My Ticket
                           </Link>
                         </li>
-                        <li>
-                          <Link
-                            href={'/dashboard'}
-                            className="hover:bg-gray-600"
-                          >
-                            Dashbord
-                          </Link>
-                        </li>
+
                         <li>
                           <Link
                             href={'/account-settings'}
@@ -209,10 +207,10 @@ const Header = () => {
                           >
                             <li>
                               <Link
-                                href={'/my-ticket'}
+                                href={'/create-event'}
                                 className="hover:bg-gray-600"
                               >
-                                My Ticket
+                                Create Event
                               </Link>
                             </li>
                             <li>
@@ -221,6 +219,14 @@ const Header = () => {
                                 className="hover:bg-gray-600"
                               >
                                 Account Setting
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                href={'/dashboard'}
+                                className="hover:bg-gray-600"
+                              >
+                                Dashbord
                               </Link>
                             </li>
                             <li className="mt-4 flex justify-center items-center">
