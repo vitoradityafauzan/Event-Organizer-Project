@@ -2,13 +2,13 @@
 
 import FormCreateEvent from '@/components/Events/FormCreateEvent.tsx/page';
 import SetVoucher from '@/components/Events/SetVoucher/page';
-import { Setting } from '@/components/Profile/Setting';
+// import { Setting } from '@/components/Profile/Setting';
 import { Wrapper } from '@/components/Wrapper';
 import { useContextGlobal } from '@/context/Context';
 import { useEffect, useState } from 'react';
 
 export default function CreateEvent() {
-  const [visible, setVisible] = useState('A');
+  const [visible, setVisible] = useState('B');
 
   const { categories, locations, fetchCategoriesLocations } =
     useContextGlobal();
@@ -26,8 +26,8 @@ export default function CreateEvent() {
 
   const renderVisible = () => {
     switch (visible) {
-      case 'A':
-        return <Setting />;
+      // case 'A':
+      //   return <Setting />;
       case 'B':
         return <FormCreateEvent />;
       case 'C':
@@ -39,7 +39,7 @@ export default function CreateEvent() {
 
   return (
     <Wrapper additional="justify-between">
-      <div className="w-fit pr-4 drawer lg:drawer-open  border-2 border-red-600">
+      <div className="w-fit pr-4 drawer lg:drawer-open  border-r-4">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col items-center justify-center">
           <label
@@ -57,9 +57,9 @@ export default function CreateEvent() {
           ></label>
           <ul className="menu bg-base-200 text-base-content min-h-full lg:bg-slate-50 w-60 md:w-64">
             {/* Sidebar content here */}
-            <li>
+            {/* <li>
               <a onClick={() => setVisible('A')}>Profile Info</a>
-            </li>
+            </li> */}
             <li>
               <a onClick={() => setVisible('B')}>Create Event</a>
             </li>

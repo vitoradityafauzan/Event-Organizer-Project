@@ -112,16 +112,16 @@ export class EventController {
       const event = await prisma.event.findFirst({
         where: { slug: req.params.slug },
         include: { category: true, location: true },
-        orderBy: { createdAt: 'desc' }
-    })  
-    console.log('API, get event by slug success');
+        orderBy: { createdAt: 'desc' },
+      });
+      console.log('API, get event by slug success');
 
-    console.log(event);
+      console.log(event);
 
-    res.status(200).send({
+      res.status(200).send({
         status: 'ok',
-        event
-    })
+        event,
+      });
     } catch (err) {
       res.status(400).send({
         status: 'error',
@@ -137,20 +137,20 @@ export class EventController {
 
       // console.log('API, getting event by user id');
       const event = await prisma.event.findMany({
-        where: { organizerId: parseInt(req.params.userId),},
+        where: { organizerId: parseInt(req.params.userId) },
         select: {
           idEvent: true,
-          name: true
-        }
-    })  
-    // console.log('API, get event by user id success');
+          name: true,
+        },
+      });
+      // console.log('API, get event by user id success');
 
-    // console.log(event);
+      // console.log(event);
 
-    res.status(200).send({
+      res.status(200).send({
         status: 'ok',
-        event
-    })
+        event,
+      });
     } catch (err) {
       res.status(400).send({
         status: 'error',
@@ -270,19 +270,17 @@ export class EventController {
   async createVoucher(req: Request, res: Response) {
     try {
       console.log(req.user?.id);
-      
+
       const eventIdd: number = parseInt(req.body.eventId);
-      
-      if (isNaN(eventIdd)) 
-        throw 'Something is wrong';  
+
+      if (isNaN(eventIdd)) throw 'Something is wrong';
 
       const amountt: number = parseInt(req.body.amount);
-      if (isNaN(amountt)) 
-        throw 'Something is wrong';
+      if (isNaN(amountt)) throw 'Something is wrong';
 
       const findExist = await prisma.promotion.findFirst({
-        where: {eventId: eventIdd}
-      })
+        where: { eventId: eventIdd },
+      });
 
       if (findExist) throw 'Event Already Has A Discount!';
 
@@ -291,13 +289,13 @@ export class EventController {
           userId: req.user?.id,
           type: 'voucher',
           amount: amountt,
-          eventId: eventIdd
-        }
-      })
+          eventId: eventIdd,
+        },
+      });
 
       res.status(201).send({
         status: 'ok',
-        msg: 'testing',
+        msg: 'voucher successfully created',
         postPromo,
       });
     } catch (error) {
@@ -307,6 +305,178 @@ export class EventController {
       });
     }
   }
-}
 
-  
+  async createReview(req: Request, res: Response) {
+    try {
+      console.log(req.user?.id);
+
+      const ticketIdd: number = parseInt(req.body.eventId);
+      if (isNaN(ticketIdd)) throw 'Something is wrong';
+
+      const revieww: number = parseInt(req.body.review);
+      if (isNaN(revieww)) throw 'Something is wrong';
+
+      const findExist = await prisma.review.findFirst({
+        where: {
+          ticketId: ticketIdd,
+          review: revieww,
+        },
+      });
+
+      if (findExist) throw 'Event Already Reviewed!';
+
+      const postReview = await prisma.review.create({
+        data: {
+          userId: req.user?.id,
+          ticketId: ticketIdd,
+          review: revieww,
+        },
+      });
+
+      res.status(201).send({
+        status: 'ok',
+        msg: 'review posted successfully',
+        postReview,
+      });
+    } catch (error) {
+      res.status(400).send({
+        status: 'error',
+        msg: error,
+      });
+    }
+  }
+
+  async getReviewAvailable(req: Request, res: Response) {
+    try {
+      console.log(req.user?.id);
+
+      const fetchReview = await prisma.review.findMany({
+        where: {
+          userId: req.user?.id
+        },
+        select: {
+          ticketId: true,
+          review: true
+        }
+      })
+
+      if (!fetchReview) throw 'something is wrong';
+
+      console.log(fetchReview);
+      
+
+      const setWhere: any[] = fetchReview.map(t => t.ticketId)
+
+      console.log(setWhere);
+      
+
+      const fetchTicket = await prisma.ticket.findMany({
+        where: {
+          id: {in: setWhere}
+        },
+        select: {
+          eventId: true
+        }
+
+      })
+
+      if (!fetchTicket) throw 'something is wrong';
+
+      const setWhere2: any[] = fetchTicket.map(t => t.eventId)
+
+      console.log(setWhere2);
+
+      let availableEvent: any[] = await prisma.event.findMany({
+        where: {
+          idEvent: {in: setWhere2}
+        }
+      })
+
+      // console.log('after ddetch, ',availableEvent);
+
+      // for (let i = 0; i<=availableEvent.length; i++) {
+      //   // availableEvent.push({...availableEvent1[i], review: fetchReview[i].review})
+      //   console.log(fetchReview[i].review);
+      //   console.log(availableEvent[i]);
+        
+      //   availableEvent[i].amount = fetchReview[i].review
+      // }      
+
+      // console.log('after detch, ',availableEvent);
+      
+
+      res.status(201).send({
+        status: 'ok',
+        msg: 'testing',
+        // fetchUser,
+        fetchTicket,
+        availableEvent
+      });
+    } catch (error) {
+      res.status(400).send({
+        status: 'error',
+        msg: error,
+      });
+    }
+  }
+
+  async getReviewAlready(req: Request, res: Response) {
+    try {
+      console.log(req.user?.id);
+
+      const fetchReview = await prisma.review.findMany({
+        where: {
+          userId: req.user?.id
+        },
+        select: {
+          ticketId: true
+        }
+      })
+
+      if (!fetchReview) throw 'something is wrong';
+
+      console.log(fetchReview);
+      
+
+      const setWhere: any[] = fetchReview.map(t => t.ticketId)
+
+      console.log(setWhere);
+      
+
+      const fetchTicket = await prisma.ticket.findMany({
+        where: {
+          id: {notIn: setWhere}
+        },
+        select: {
+          eventId: true
+        }
+
+      })
+
+      if (!fetchTicket) throw 'something is wrong';
+
+      const setWhere2: any[] = fetchTicket.map(t => t.eventId)
+
+      console.log(setWhere2);
+
+      const availableEvent = await prisma.event.findMany({
+        where: {
+          idEvent: {in: setWhere2}
+        }
+      })
+
+      res.status(201).send({
+        status: 'ok',
+        msg: 'testing',
+        // fetchUser,
+        fetchTicket,
+        availableEvent
+      });
+    } catch (error) {
+      res.status(400).send({
+        status: 'error',
+        msg: error,
+      });
+    }
+  }
+}

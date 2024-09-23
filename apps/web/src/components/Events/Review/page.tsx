@@ -1,13 +1,13 @@
 'use client';
 import { useContextGlobal } from '@/context/Context';
-import { getEventByUser, postVoucher } from '@/lib/event';
-import { CreateVoucher } from '@/type/event';
+import { getMyEvent, getMyEvent2, postReview, postVoucher } from '@/lib/event';
+import { CreateReview, CreateVoucher } from '@/type/event';
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 
-const SetVoucher: React.FC = () => {
+const Review: React.FC = () => {
   // Global state setting
   const { userData, fetchUser } = useContextGlobal();
   // State for event data
@@ -20,7 +20,7 @@ const SetVoucher: React.FC = () => {
       // Fetch events by user when userData is available
       const fetchEvents = async () => {
         try {
-          const fetchedEvents = await getEventByUser(userData.id);
+          const fetchedEvents = await getMyEvent();
           setEvents(fetchedEvents);
         } catch (error) {
           console.error('Error fetching events:', error);
@@ -32,16 +32,16 @@ const SetVoucher: React.FC = () => {
   }, [userData, fetchUser]);
 
   const VoucherSchema = yup.object().shape({
-    amount: yup.number().required('Discount Percentage Is Required!'),
+    review: yup.number().required('Review Is Required!'),
   });
 
   // Form Submit handler
   const handleSubmit = async (
-    data: CreateVoucher,
-    action: FormikHelpers<CreateVoucher>,
+    data: CreateReview,
+    action: FormikHelpers<CreateReview>,
   ) => {
     try {
-      const { result } = await postVoucher(data);
+      const { result } = await postReview(data);
 
       if (result.status == 'error') {
         throw result.msg;
@@ -57,22 +57,25 @@ const SetVoucher: React.FC = () => {
   };
 
   return (
-    <div className='grow p-5'>
+    <div className="grow p-5">
       {userData && (
         <Formik
           initialValues={{
-            eventId: userData.id,
-            amount: 0,
+            userId: userData.id,
+            eventId: 0,
+            review: 0
           }}
           validationSchema={VoucherSchema}
           onSubmit={handleSubmit}
         >
           {({ setFieldValue, values }) => {
             return (
-              <Form className='flex flex-col gap-5'>
-                <h1 className='text-xl font-bold'>Welcome, {userData.firstName} {userData.lastName}</h1>
+              <Form className="flex flex-col gap-5">
+                <h1 className="text-xl font-bold">
+                  Welcome, {userData.firstName} {userData.lastName}
+                </h1>
                 {events ? (
-                  <div className='flex gap-5 items-center'>
+                  <div className="flex gap-5 items-center">
                     <label htmlFor="eventId">Choose The Event</label>
                     <select
                       className="select w-full max-w-xs border-2"
@@ -95,7 +98,7 @@ const SetVoucher: React.FC = () => {
                     />
                   </div>
                 ) : (
-                  <div  className='flex gap-5 items-center'>
+                  <div className="flex gap-5 items-center">
                     <label htmlFor="userId">Choose Event</label>
                     <select
                       className="select w-full max-w-xs border-2"
@@ -114,16 +117,21 @@ const SetVoucher: React.FC = () => {
                   </div>
                 )}
                 <div className='flex gap-5 items-center'>
-                  <label htmlFor="amount">Set Discount Percentage</label>
-                  <Field type="number" name="amount" max="95" min="1" className="input input-bordered w-full max-w-xs" />
+                  <label htmlFor="review">Set Review</label>
+                  <Field type="number" name="review" max="5" min="1" className="input input-bordered w-full max-w-xs" />
                   <ErrorMessage
-                    name="amount"
+                    name="review"
                     component="div"
                     className="text-red-500"
                   />
                 </div>
 
-                <button type="submit" className="btn btn-outline btn-warning w-40 mx-auto mt-5">Submit</button>
+                <button
+                  type="submit"
+                  className="btn btn-outline btn-warning w-40 mx-auto mt-5"
+                >
+                  Submit
+                </button>
               </Form>
             );
           }}
@@ -133,4 +141,4 @@ const SetVoucher: React.FC = () => {
   );
 };
 
-export default SetVoucher;
+export default Review;

@@ -34,6 +34,12 @@ export class EventRouter {
 
     this.router.post('/voucher', testUpload.none(), verifyToken, this.eventController.createVoucher)
 
+    this.router.post('/review', testUpload.none(), verifyToken, this.eventController.createReview)
+
+    this.router.get('/review/available', verifyToken, this.eventController.getReviewAvailable)
+
+    this.router.get('/review/already', verifyToken, this.eventController.getReviewAlready)
+
   }
 
   getRouter(): Router {

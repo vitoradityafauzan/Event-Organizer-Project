@@ -68,3 +68,9 @@ export interface CreateVoucher {
     eventId: number;
     amount: number;
 }
+
+export interface CreateReview {
+    eventId: number;
+    userId: number;
+    review: number;
+}

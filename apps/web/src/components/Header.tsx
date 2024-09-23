@@ -76,7 +76,7 @@ const Header = () => {
                 />
               </svg>
             </div>
-            {(token || user.id  && checkRole(Role.Attendees)) ? (
+            {(token || user.id) && checkRole(Role.Organizer) ? (
               <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow border-2"
@@ -99,16 +99,14 @@ const Header = () => {
                 <li>
                   <Link href="/event">Events</Link>
                 </li>
-                <li>
-                  <Link href="/testing">Testing</Link>
-                </li>
               </ul>
             )}
-            
           </div>
         </div>
         <div className="navbar-center border-2">
-          <Link href="/" className='text-xl p-2 hover:bg-slate-200'>La Memoria Infinita</Link>
+          <Link href="/" className="text-xl p-2 hover:bg-slate-200">
+            La Memoria Infinita
+          </Link>
         </div>
         <div className="navbar-end">
           <SearchModal />
@@ -145,7 +143,7 @@ const Header = () => {
                         className="dropdown-content menu bg-base-100 rounded-box z-[1] w-44 p-2 shadow"
                       >
                         <li>
-                          <Link href={'/my-event'}>My Event</Link>
+                          <Link href={'/account-settings/my-event'}>My Event</Link>
                         </li>
                         <li>
                           <Link href={'/dashboard'}>Dashbord</Link>
@@ -154,6 +152,14 @@ const Header = () => {
                           <Link href={'/account-settings'}>
                             Account Setting
                           </Link>
+                        </li>
+                        <li className="mt-4 flex justify-center items-center">
+                          <div
+                            onClick={onLogout}
+                            className="bg-gray-600 hover:bg-gray-400"
+                          >
+                            LogOut
+                          </div>
                         </li>
                       </ul>
                     </div>

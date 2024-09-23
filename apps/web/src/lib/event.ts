@@ -1,4 +1,4 @@
-import { CreateVoucher, EventPost, FormEventCreate } from '@/type/event';
+import { CreateReview, CreateVoucher, EventPost, FormEventCreate } from '@/type/event';
 import { getToken } from './server';
 
 const base_url = process.env.BASE_URL_API || 'http://localhost:8000/api/';
@@ -202,6 +202,66 @@ export const getEventByUser = async (userId: string | number) => {
   }
 };
 
+export const getMyEvent = async () => {
+  // console.log('Fetching event by user');
+
+  const token = await getToken();
+  if (!token) throw new Error('No token found');
+
+  console.log('Check token before get,',token);
+
+  const res = await fetch(`${base_url}event/review/already`, {
+    next: { revalidate: 3600 }, 
+    method: 'GET',
+    headers: {
+          Authorization: `Bearer ${token}`,
+    },});
+
+  const result = await res.json();
+
+  if (result.status != 'ok') {
+    throw new Error(result.msg);
+  } else {
+    console.log('Fetching event by userId success');
+
+    console.log(result);
+
+    const event: any[] | null = result.availableEvent;
+
+    return event;
+  }
+};
+
+export const getMyEvent2 = async () => {
+  // console.log('Fetching event by user');
+
+  const token = await getToken();
+  if (!token) throw new Error('No token found');
+
+  console.log('Check token before get,',token);
+
+  const res = await fetch(`${base_url}event/review/available`, {
+    next: { revalidate: 3600 }, 
+    method: 'GET',
+    headers: {
+          Authorization: `Bearer ${token}`,
+    },});
+
+  const result = await res.json();
+
+  if (result.status != 'ok') {
+    throw new Error(result.msg);
+  } else {
+    console.log('Fetching event by userId success');
+
+    console.log(result);
+
+    const event: any[] | null = result.availableEvent;
+
+    return event;
+  }
+};
+
 export const getLocationAndCategory = async () => {
   const res = await fetch(`${base_url}event/category-location`);
   console.log('Fetching Categories and Locations, Lib Server');
@@ -220,4 +280,29 @@ export const getLocationAndCategory = async () => {
       ok: res.ok,
     };
   }
+};
+
+export const postReview = async (data: CreateReview) => {
+  const postData = new FormData();
+  postData.append('userId', data.userId.toString());
+  postData.append('eventId', data.eventId.toString());
+  postData.append('review', data.review.toString());
+
+  const token = await getToken();
+  if (!token) throw new Error('No token found');
+
+  console.log('Check token before post,',token);
+  
+
+  const res = await fetch(`${base_url}event/review`, {
+    method: 'POST',
+    body: postData, // Send formData here
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await res.json();
+
+  return { result };
 };

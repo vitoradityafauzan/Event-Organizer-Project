@@ -62,7 +62,7 @@ const CardEvent: React.FC<IEvent> = ({
       <div className="card-body">
         <h2 className="card-title">{name}</h2>
         <h3>{newStart} - {newEnd}</h3>
-        <p className="text-lg" dangerouslySetInnerHTML={createMarkup(desc)}></p>
+        <p className="text-lg h-32 text-ellipsis overflow-hidden ..." dangerouslySetInnerHTML={createMarkup(desc)}></p>
         <div className="card-actions justify-end">
           <Link href={`/event/${slug}`}>
             <button className="btn btn-primary">Check Now</button>

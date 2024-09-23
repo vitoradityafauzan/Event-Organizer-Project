@@ -80,7 +80,7 @@ const FormCreateEvent: React.FC = () => {
   // })
 
   return (
-    <div className="border-4 grow">
+    <div className="grow p-5">
       <Formik
         initialValues={{
           name: '',
@@ -120,7 +120,7 @@ const FormCreateEvent: React.FC = () => {
                   </div>
                 )}
                 {/* Image */}
-                <div>
+                <div className='flex items-center gap-5'>
                   <label htmlFor="image">Upload Image</label>
                   <input
                     type="file"
@@ -158,11 +158,12 @@ const FormCreateEvent: React.FC = () => {
                 )} */}
 
                 {/* Name */}
-                <div>
+                <div className='flex items-center gap-5'>
                   <label htmlFor="name">Name</label>
                   <input
                     type="text"
                     name="name"
+                    className="input input-bordered w-full max-w-xs"
                     value={values.name}
                     placeholder="Enter the name of the event"
                     onChange={(e: React.FormEvent<HTMLInputElement>) => {
@@ -228,7 +229,7 @@ const FormCreateEvent: React.FC = () => {
                 </div> */}
 
                 {/* Set Ticket Price */}
-                <div className="form-control">
+                <div className="form-control w-4/12">
                   <label className="label cursor-pointer">
                     <span className="label-text">Is This Paid Event</span>
                     <input
@@ -247,9 +248,9 @@ const FormCreateEvent: React.FC = () => {
                 </div>
 
                 {isPaid && (
-                  <div>
+                  <div className='flex items-center gap-5'>
                     <label htmlFor="price">Set Price</label>
-                    <Field type="number" name="price" />
+                    <Field type="number" name="price" className="input input-bordered w-full max-w-xs" />
                     <ErrorMessage
                       name="price"
                       component="div"
@@ -259,9 +260,9 @@ const FormCreateEvent: React.FC = () => {
                 )}
 
                 {/* Maximum Attendees */}
-                <div>
+                <div className='flex items-center gap-5'>
                   <label htmlFor="amount">Set Maximum Attendees</label>
-                  <Field type="number" name="amount" />
+                  <Field type="number" name="amount" className="input input-bordered w-full max-w-xs" />
                   <ErrorMessage
                     name="amount"
                     component="div"
@@ -270,7 +271,7 @@ const FormCreateEvent: React.FC = () => {
                 </div>
 
                 {/* Start Date */}
-                <div>
+                <div className='flex items-center gap-5'>
                   <label htmlFor="startDate">Start Date</label>
                   <Field type="date" name="startDate" />
                   <ErrorMessage
@@ -281,7 +282,7 @@ const FormCreateEvent: React.FC = () => {
                 </div>
 
                 {/* End Date */}
-                <div>
+                <div className='flex items-center gap-5'>
                   <label htmlFor="endDate">End Date</label>
                   <Field type="date" name="endDate" />
                   <ErrorMessage
@@ -292,7 +293,7 @@ const FormCreateEvent: React.FC = () => {
                 </div>
 
                 {/* Start Time */}
-                <div>
+                <div className='flex items-center gap-5'>
                   <label htmlFor="startTime">Open Time</label>
                   <Field type="time" name="startTime" />
                   <ErrorMessage
@@ -303,7 +304,7 @@ const FormCreateEvent: React.FC = () => {
                 </div>
 
                 {/* End Time */}
-                <div>
+                <div  className='flex items-center gap-5'>
                   <label htmlFor="endTime">Close Time</label>
                   <Field type="time" name="endTime" />
                   <ErrorMessage
@@ -413,7 +414,7 @@ const FormCreateEvent: React.FC = () => {
                   />
                 </div> */}
 
-                <button type="submit">Submit</button>
+                <button type="submit" className="btn btn-outline btn-warning w-40 mx-auto mt-5">Submit</button>
               </div>
             </Form>
           );
