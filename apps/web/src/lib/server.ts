@@ -2,8 +2,7 @@
 import { cookies } from 'next/headers';
 
 // Set Base Url Of API
-const base_url =
-  process.env.BASE_URL_API || 'http://localhost:8000/api/';
+const base_url = process.env.BASE_URL_API || 'http://localhost:8000/api/';
 
 // Setting Cookies
 const cookiesStore = cookies();
@@ -13,7 +12,7 @@ export async function createCategoriesLocations() {
   // Fetch Category and Location List
   const response = await fetch(`${base_url}event/category-location`);
   const data = await response.json();
-  
+
   const oneDay = 24 * 60 * 60 * 1000;
 
   // const category = [{idCategory: 0, name: 'Category Select'}, ...data.category];
@@ -34,34 +33,32 @@ export async function getCategoriesLocationsHome() {
 
   if (cookiesStore.has('categories') && cookiesStore.has('locations')) {
     console.log('Server Ts, getting cookie');
-    console.log(cookiesStore.get('categories'));    
-    
+    console.log(cookiesStore.get('categories'));
+
     const dataCategory = cookiesStore.get('categories')?.value;
     const dataLocation = cookiesStore.get('locations')?.value;
 
     return { categoryList: dataCategory, locationList: dataLocation };
-
   } else {
     console.log('Server Ts, cookie not found/expire');
     return { categoryList: ['not-found'], locationList: ['not-found'] };
-
   }
 }
 
 export async function deleteCategoriesLocations() {
-    cookiesStore.delete('categories');
-    cookiesStore.delete('locations');
+  cookiesStore.delete('categories');
+  cookiesStore.delete('locations');
 }
 
 export async function createToken(token: string) {
-    const oneDay = 24 * 60 * 60 * 1000
-    cookies().set('token', token, { expires: Date.now() + oneDay })
+  const oneDay = 24 * 60 * 60 * 1000;
+  cookies().set('token', token, { expires: Date.now() + oneDay });
 }
 
 export async function getToken() {
-    return cookies().get('token')?.value
+  return cookies().get('token')?.value;
 }
 
 export async function deleteToken() {
-    cookies().delete('token')
+  cookies().delete('token');
 }

@@ -38,6 +38,7 @@ export interface IUserState {
   email: string;
   userType: string;
   points: number;
+  phone: number;
 }
 
 export interface Event {

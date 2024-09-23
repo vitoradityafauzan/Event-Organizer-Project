@@ -1,205 +1,121 @@
-import { Request, Response } from 'express';
-import prisma from '../prisma';
-import { format, formatISO, isMatch } from 'date-fns';
+import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
+import { Request, Response } from 'express';
+import multer = require('multer');
 
-const port = process.env.PORT;
-
-// interface IEvent {
-//   name: string;
-//   slug: string;
-//   desc: string;
-//   image: string;
-//   price: number;
-//   amount: number;
-//   locationId: number;
-//   categoryId: number;
-//   startDate: string;
-//   endDate: string;
-//   user: {
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//   };
-//   category: {
-//     idCategory: number;
-//     name: string;
-//   };
-//   location: {
-//     idLocation: number;
-//     name: string;
-//   };
-// }
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
 
 export class EventController {
-  async getEvents(req: Request, res: Response) {
+  // Metode lainnya...
+
+  async createEvent(req: MulterRequest, res: Response) {
     try {
-        const { search } = req.query;
+      if (!req.file) throw new Error('No file uploaded'); // Lebih baik gunakan Error object
 
-        const filterCategory = req.query.category as string | undefined;
-        const category = filterCategory ? parseInt(filterCategory, 10) : undefined;
+      const link = `http://localhost:8000/api/public/event/${req.file.filename}`;
 
-        const filterLocation = req.query.location as string | undefined;
-        const location = filterLocation ? parseInt(filterLocation, 10) : undefined;
+      const {
+        firstName,
+        lastName,
+        price,
+        location,
+        description,
+        isPaidEvent,
+        availableSeats,
+        organizerId,
+        eventDate,
+        eventTime, // Mengelola waktu terpisah
+        sellEndDate, // Tanggal berakhir penjualan
+        sellEndTime, // Waktu berakhir penjualan
+      } = req.body;
 
-        let filter: Prisma.EventWhereInput = {};
+      const eventDateTime = new Date(`${eventDate}T${eventTime}`);
+      const sellEndDateTime = new Date(`${sellEndDate}T${sellEndTime}`);
 
-        if (search) {
-          filter.name = { contains: search as string };
-        }
+      if (isPaidEvent === 'Paid' && (!price || isNaN(parseFloat(price)))) {
+        throw new Error('Price must be provided for Paid events');
+      }
 
-        if (category || category != undefined) {
-          filter.categoryId = category;
-        }
+      const eventData: Prisma.EventCreateInput = {
+        firstName,
+        lastName,
+        location,
+        description,
+        isPaidEvent,
+        availableSeats: parseInt(availableSeats),
+        eventDate: new Date(eventDate),
+        eventTime: eventDateTime,
+        sellEndDate: new Date(sellEndDate),
+        sellEndTime: sellEndDateTime,
+        image: link,
+        organizer: { connect: { idUser: parseInt(organizerId, 10) } },
+      };
 
-        if (location || location != undefined) {
-          filter.locationId = location;
-        }
+      if (isPaidEvent === 'Paid') {
+        eventData.price = parseFloat(price);
+      } else {
+        eventData.price = 0;
+      }
 
-        const events = await prisma.event.findMany({
-          where: filter,
-          include: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
-                email: true,
-              },
-            },
-            category: true,
-            location: true,
-          },
-        });
-
-      // const events = await prisma.event.findMany({
-      //   include: {
-      //     user: {
-      //       select: {
-      //         firstName: true,
-      //         lastName: true,
-      //         email: true,
-      //       },
-      //     },
-      //     category: true,
-      //     location: true,
-      //   },
-      // });
-
-      res.status(200).send({
-        status: 'ok',
-        events,
+      const event = await prisma.event.create({
+        data: eventData,
       });
-      //
+
+      res.status(201).json({ event });
     } catch (err) {
-      res.status(400).send({
-        status: 'error',
-        msg: err,
+      res.status(400).json({
+        msg: err instanceof Error ? err.message : 'An error occurred',
       });
     }
   }
 
-  async getCategoryLocation(req: Request, res: Response) {
+  async getEvent(req: Request, res: Response) {
     try {
+      const { search } = req.query;
+      let filter: Prisma.EventWhereInput = {};
 
-      const category = await prisma.category.findMany();
-  
-      const location = await prisma.location.findMany();
-
-      res.status(200).send({
-            status: 'ok',
-            category,
-            location
-          });
-          //
-        } catch (err) {
-          res.status(400).send({
-            status: 'error',
-            msg: err,
-          });
-        }
+      if (search) {
+        filter.firstName = { contains: search as string };
       }
-
-  async createEvents(req: Request, res: Response) {
-    try {
-      console.log('Checking image file ....');
-
-      if (!req.file) throw 'Image File Not Uploaded';
-      console.log('Past File Check');
-
-      const link = `http://localhost:${port}/api/public/event/${req?.file?.filename}`;
-      // const link = `${req?.file?.filename}`;
-
-      const { name, slug, desc, startDate, endDate } = req.body;
-
-      console.log('original date = -', req.body.startDate,'-');
-      
-
-      console.log('Checking date, ', isMatch(req.body.startDate, 'yyyy-MM-dd, HH:mm:ss'));
-      
-
-      if (
-        !isMatch(req.body.startDate, 'yyyy-MM-dd, HH:mm:ss') &&
-        !isMatch(req.body.endDate, 'yyyy-MM-dd, HH:mm:ss')
-      ) throw "Date And/Or Time Format Is Incorrect!";
-
-      const locationn = parseInt(req.body.locationId);
-      const pricee = parseInt(req.body.price);
-      const amountt = parseInt(req.body.amount);
-      const category = parseInt(req.body.categoryId);
-      let organizer: number;
-
-      if (req.body.organizerId == '' || req.body.organizerId == null || req.body.organizerId == undefined) {
-        organizer = 1;
-      } else {
-        organizer = parseInt(req.body.organizerId);
-      }
-
-      console.log(locationn, ' ', startDate, ' ', endDate, 'dsds');
-
-      const findOccupied: { name: string }[] = await prisma.$queryRawUnsafe(
-        `SELECT name FROM event WHERE locationId = ${locationn} AND (startDate <= "${startDate}" AND endDate >= "${endDate}");`,
-      );
-
-      console.log('after find occupied');
-      
-
-      if (!findOccupied) {
-        console.log('event occupied');
-        
-        throw 'An Event Already Set At Selected Location And Time!';
-      }
-        
-
-      console.log('after if find occupied');
-      
-
-      const makeEvent = await prisma.event.create({
-        data: {
-          name,
-          slug,
-          desc,
-          image: link,
-          price: pricee,
-          amount: amountt,
-          startDate: formatISO(startDate),
-          endDate: formatISO(endDate),
-          locationId: locationn,
-          categoryId: category,
-          organizerId: organizer,
-          // organizerId: req.user?id!
-        },
+      const events = await prisma.event.findMany({
+        where: filter,
+        include: { organizer: true },
+        orderBy: { createdAt: 'desc' },
       });
-
-      res.status(201).send({
+      res.status(200).json({
         status: 'ok',
-        msg: 'event success post',
-        makeEvent,
+        event: events,
       });
-      //
     } catch (err) {
-      res.status(400).send({
-        status: 'error',
-        msg: err,
+      res.status(400).json({
+        msg: err instanceof Error ? err.message : 'An error occurred',
+      });
+    }
+  }
+
+  async getEventById(req: Request, res: Response) {
+    try {
+      const { id } = req.params; // Ambil ID dari parameter URL
+
+      if (!id || isNaN(Number(id))) {
+        return res.status(400).json({ msg: 'Invalid event ID' });
+      }
+
+      const event = await prisma.event.findUnique({
+        where: { idEvent: Number(id) },
+        include: { organizer: true }, // Sertakan informasi organizer jika diperlukan
+      });
+
+      if (!event) {
+        return res.status(404).json({ msg: 'Event not found' });
+      }
+
+      res.status(200).json({ event });
+    } catch (err) {
+      res.status(400).json({
+        msg: err instanceof Error ? err.message : 'An error occurred',
       });
     }
   }

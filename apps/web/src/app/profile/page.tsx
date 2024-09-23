@@ -1,23 +1,21 @@
 'use client';
 
-import { History } from '@/components/Profile/History';
-import { Setting } from '@/components/Profile/Setting';
+import { Profile as ProfileComponent } from '@/components/Profile/profile';
 import { Wrapper } from '@/components/Wrapper';
 import { useState } from 'react';
 
 const Profile: React.FC = () => {
-    const [visible, setVisible] = useState('A');
+  const [visible, setVisible] = useState('A');
 
-    const renderVisible = () => {
-        switch (visible) {
-            case 'A':
-                return <Setting />
-            case 'B':
-                return <History />
-            default:
-                return <h1>Not Detected</h1>;
-        }
+  const renderVisible = () => {
+    switch (visible) {
+      case 'A':
+        return <ProfileComponent />;
+
+      default:
+        return <h1>Not Detected</h1>;
     }
+  };
 
   return (
     <Wrapper>

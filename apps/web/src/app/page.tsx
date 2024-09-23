@@ -15,7 +15,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     if (!categories && !locations) {
-      console.log("Home, global state not there");
+      console.log('Home, global state not there');
 
       fetchCategoriesLocations();
     }
@@ -23,14 +23,13 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     console.log('Home component, checking categories\n', categories);
-    
-  }, [categories])
+  }, [categories]);
 
   return (
     <Wrapper additional="flex-col gap-32">
       {/* Hero Section */}
       <HeroBanner />
-      
+
       {/* App advantages */}
       <Advantage />
       {/* Current Events */}

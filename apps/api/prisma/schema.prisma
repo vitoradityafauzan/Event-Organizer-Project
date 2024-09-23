@@ -62,7 +62,7 @@ model User {
   isActive       Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  Event     Event[]
+  events         Event[]  @relation("OrganizedEvents")
   Ticket    Ticket[]
 }
 
@@ -72,37 +72,39 @@ model Category {
   name       CategoryList @default(Trade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Event      Event[]
+
 }
 
-model Location {
-  idLocation Int          @id @default(autoincrement())
-  name       LocationList @default(A1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Event      Event[]
+
+
+enum IsPaidEvent {
+  Free
+  Paid
 }
 
 model Event {
   idEvent     Int      @id @default(autoincrement())
   organizerId Int
-  name        String
-  slug        String
-  desc        String   @db.LongText
-  image       String?
-  price       Int
-  amount      Int
-  categoryId  Int
-  startDate   DateTime
-  endDate     DateTime
-  locationId  Int
-  isActive    Boolean @default(true)
+  firstName   String
+  lastName    String
+  description String   @db.LongText
+  image       String
+  price          Float       @default(0.0)
+  eventDate      DateTime
+  eventTime      DateTime
+  sellEndDate    DateTime
+  sellEndTime    DateTime
+  availableSeats Int
+  isPaidEvent    IsPaidEvent
+  location String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt 
 
-  user     User     @relation(fields: [organizerId], references: [idUser])
-  category Category @relation(fields: [categoryId], references: [idCategory])
-  location Location @relation(fields: [locationId], references: [idLocation])
+  // Relations
+ 
+  organizer   User  @relation("OrganizedEvents", fields: [organizerId], references: [idUser])
+  
+
   
 }
 

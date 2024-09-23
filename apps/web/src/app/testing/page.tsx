@@ -1,7 +1,7 @@
 'use client';
 
 import { History } from '@/components/Profile/History';
-import { Setting } from '@/components/Profile/Setting';
+import { Setting } from '@/components/Profile/profile';
 import { Wrapper } from '@/components/Wrapper';
 import { useState } from 'react';
 
